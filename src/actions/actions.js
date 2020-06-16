@@ -5,9 +5,12 @@
 import {hideSuggestionItemsTooltip, normalizeNumber, normalizeParam, objectFlip} from '../helpers/searchHelpers';
 import {SORT_FIELDS, SORT_ORDERS} from '../helpers/constants';
 import {navigate} from 'gatsby';
+import {CLASSIC_AH_API} from '../helpers/endpoints';
 const axios = require('axios').default;
 
+export const SEARCH_STATE = 'SEARCH_STATE';
 export const SET_SEARCH_BAR_REF = 'SET_SEARCH_BAR_REF';
+export const SET_PAGE_CONTEXT = 'SET_PAGE_CONTEXT';
 export const SET_CURRENT_REALM = 'SET_CURRENT_REALM';
 export const SET_CURRENT_FACTION = 'SET_CURRENT_FACTION';
 export const SET_ERROR = 'SET_ERROR';
@@ -42,6 +45,14 @@ export const VisibilityFilters = {
 /*
  * action creators
  */
+
+export function setSearchState(searchState) {
+  return { type: SEARCH_STATE, searchState }
+}
+
+export function setPageContext(item) {
+  return { type: SET_PAGE_CONTEXT, item }
+}
 
 export function setCurrentRealm(currentRealm) {
   return { type: SET_CURRENT_REALM, currentRealm }
@@ -157,7 +168,14 @@ export function searchOnSetSort(field, order, overrideQuery=null, pushHistory=fa
     return Promise.all([
       dispatch(addSort(field, order)),
     ]).then(() => {
+      const {pageReducer: {itemPageContext}} = getState();
+
+      if (itemPageContext) {
+        dispatch(search(0, overrideQuery, false));
+        return;
+      }
       dispatch(search(0, overrideQuery, pushHistory));
+
     }, (err) => {
       // Error
       dispatch(setError("Error trying to search after sorting by " +  field + " and order " + order, err))
@@ -166,18 +184,24 @@ export function searchOnSetSort(field, order, overrideQuery=null, pushHistory=fa
 }
 
 
-export function searchOnSetRealmAndFaction(currentRealm, currentFaction, pathname) {
+export function searchOnSetRealmAndFaction(currentRealm, currentFaction, overrideQuery=null, pushHistory=true) {
   return function(dispatch, getState) {
     return Promise.all([
       dispatch(setCurrentRealm(currentRealm)),
       dispatch(setCurrentFaction(currentFaction))
     ]).then(() => {
       const {pageReducer} = getState();
-      const {query: q, currentRealm: r, currentFaction: f} = pageReducer;
+      const {itemPageContext, hasSearched, query: q, currentRealm: r, currentFaction: f} = pageReducer;
+      const query = overrideQuery ? overrideQuery : q;
       // All done
-      const isValid = searchIsValid(null, q, r, f);
+      if (itemPageContext && (q === '' || hasSearched)) {
+        dispatch(search(0, itemPageContext.name, false));
+        return;
+      }
+
+      const isValid = searchIsValid(null, query, r, f);
       if (isValid) {
-        dispatch(search(0, q, !pathname.startsWith('/item')));
+        dispatch(search(0, q, pushHistory));
       }
     }, (err) => {
       // Error
@@ -212,7 +236,7 @@ export function searchFromHomePage(overrideQuery=null) {
     }
 
     const formattedRealm = currentRealm.replace(" ", "");
-    await navigate('/search?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction);
+    await navigate('/?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction);
     // dispatch(push('/search?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction));
   };
 }
@@ -241,7 +265,7 @@ export function search(pageNum=0, overrideQuery=null, pushHistory=true)  {
 
     if (pushHistory) {
       // dispatch(push('/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp))
-      await navigate('/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
+      await navigate('/?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
     }
     dispatch(loadSpinner());
     dispatch(setMobileNavExpanded(false));
@@ -318,11 +342,11 @@ export function convertSortParamsToURLParams(sortParams) {
 }
 
 const requestSearch = (p=0, q, r, f, sp) => {
-  return axios.get('/api/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
+  return axios.get(CLASSIC_AH_API + '/api/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
 };
 
 const requestMarketpriceData = (timespan=0, r, f, itemId) => {
-  return axios.get('/api/marketprice?timespan=' + timespan + '&realm=' + r + '&faction=' + f + '&itemId=' + itemId);
+  return axios.get(CLASSIC_AH_API + '/api/marketprice?timespan=' + timespan + '&realm=' + r + '&faction=' + f + '&itemId=' + itemId);
 };
 
 export function autocomplete(event) {
@@ -349,7 +373,7 @@ export function autocomplete(event) {
 
 const requestAutoComplete = (query, formattedRealm, currentFaction) => {
   const q = normalizeParam(query), r = normalizeParam(formattedRealm), f = normalizeParam(currentFaction);
-  return axios.get('/api/autocomplete?q=' + q + '&realm=' + r + '&faction=' + f, {});
+  return axios.get(CLASSIC_AH_API + '/api/autocomplete?q=' + q + '&realm=' + r + '&faction=' + f, {});
 };
 
 export function pickSuggestion(e, fromHomePage=false) {
