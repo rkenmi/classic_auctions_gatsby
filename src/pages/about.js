@@ -6,7 +6,7 @@ const React = require('react');
 class About extends React.Component {
   render() {
     return (
-      <Layout>
+      <Layout metaInfo={{subtitle: 'About', description: 'About Classic AH'}}>
         <Container style={{color: '#fff', paddingTop: 80, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
           <div style={{display: 'flex', justifyContent: 'center'}}>
             <a href={'https://classic-ah.com'}>

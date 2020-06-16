@@ -1,4 +1,3 @@
-import {Button, DropdownItem, Form, InputGroup} from 'react-bootstrap';
 import {
   Menu,
   menuItemContainer,
@@ -7,12 +6,16 @@ import {
 } from 'react-bootstrap-typeahead';
 import {getColorCode, hideSuggestionItemsTooltip} from '../helpers/searchHelpers';
 import {connect} from 'react-redux';
-import {setSearchBarRef} from '../actions/actions';
+import {setSearchBarRef, setSearchState} from '../actions/actions';
 import React from 'react';
 import {Desktop, Mobile, Tablet} from '../helpers/mediaTypes';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSearch} from '@fortawesome/free-solid-svg-icons';
 import {TINY_ICON_URL} from '../helpers/endpoints';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import DropdownItem from 'react-bootstrap/DropdownItem';
 
 class AuctionHouseSearch extends React.Component {
 
@@ -168,7 +171,7 @@ function mapDispatchToProps(dispatch) {
   return {
     setRef: (ref) => {
       dispatch(setSearchBarRef(ref));
-    }
+    },
   }
 }
 

@@ -2,10 +2,10 @@ import {TIME_REMAINING} from '../helpers/constants';
 import {getColorCode} from '../helpers/searchHelpers';
 import Swiper from 'react-id-swiper';
 import 'swiper/css/swiper.css'
-import {Button} from 'react-bootstrap';
 import {Link} from 'gatsby';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChartBar} from '@fortawesome/free-solid-svg-icons';
+import Button from 'react-bootstrap/Button';
 
 const React = require('react');
 

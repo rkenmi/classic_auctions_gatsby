@@ -1,4 +1,5 @@
-import {Pagination} from 'react-bootstrap';
+import Pagination from 'react-bootstrap/Pagination';
+
 const React = require('react');
 
 export default class AuctionPagination extends React.Component {

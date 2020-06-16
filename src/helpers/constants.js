@@ -4,6 +4,7 @@ export const constants = {
 
 export const TIME_REMAINING = ['Short', 'Medium', 'Long', 'Very Long'];
 
+export const SEO_DESCRIPTION = 'Search engine for Auction House pricing data and graphs on Classic WoW';
 export const SORT_FIELDS = {
   BID: 'bid',
   BUYOUT: 'buyout',

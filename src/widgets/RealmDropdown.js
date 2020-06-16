@@ -1,6 +1,6 @@
 import {MISC_URL} from '../helpers/endpoints';
-import {Dropdown} from 'react-bootstrap';
 import useMediaQuery from 'react-responsive/src/useMediaQuery';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 const React = require('react');
 const ALLIANCE_ICON = MISC_URL + 'alliance_50.png';

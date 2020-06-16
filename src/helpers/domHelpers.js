@@ -1,5 +1,7 @@
 import React from 'react';
 import {useMediaQuery} from 'react-responsive';
+import Container from 'react-bootstrap/Container';
+import Spinner from 'react-bootstrap/Spinner';
 
 export const Logo = (props) => {
   const isDesktopOrLaptop = useMediaQuery({
@@ -14,4 +16,12 @@ export const Logo = (props) => {
     return (<h3>Classic <span>AH</span></h3>)
   }
 };
+
+export const SPINNER_DOM = (
+  <Container style={{flex: 1, display: 'flex', marginTop: 35, justifyContent: 'center'}}>
+    <Spinner variant='info' animation="border" role="status">
+      <span className="sr-only">Loading...</span>
+    </Spinner>
+  </Container>
+);
 

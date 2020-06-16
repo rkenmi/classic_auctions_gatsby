@@ -19,7 +19,7 @@ import {
   HIDE_GRAPH_MODAL,
   SET_TIMESPAN,
   UPDATE_ITEM_PAGE_GRAPH_DATA,
-  LOAD_GRAPH_SPINNER
+  LOAD_GRAPH_SPINNER, SET_PAGE_CONTEXT, SEARCH_STATE
 } from '../actions/actions'
 import {REALMS} from '../helpers/constants';
 // import { connectRouter } from 'connected-react-router'
@@ -43,6 +43,16 @@ function pageReducer(state = {count: 0, realms: REALMS,suggestions: [], items: [
   sort: {}, mobileNavExpanded: false, graph: {item: null, prices: [], timespan: 0}}, action)
 {
   switch (action.type) {
+    case SEARCH_STATE:
+      return {
+        ...state,
+        hasSearched: action.searchState
+      };
+    case SET_PAGE_CONTEXT:
+      return {
+        ...state,
+        itemPageContext: action.item
+      };
     case UPDATE_SEARCH_RESULTS:
       const {items, page, queryMs, count} = action.results;
       return {
@@ -172,8 +182,7 @@ function pageReducer(state = {count: 0, realms: REALMS,suggestions: [], items: [
   }
 }
 
-const rootReducer = (history) => combineReducers({
-  // router: connectRouter(history),
+const rootReducer = () => combineReducers({
   pageReducer,
   visibilityReducer
 });

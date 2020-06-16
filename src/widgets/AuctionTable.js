@@ -1,14 +1,3 @@
-import {
-  Button,
-  Dropdown,
-  ButtonGroup,
-  Container,
-  DropdownButton,
-  Modal,
-  Spinner,
-  Table,
-  ToggleButton
-} from 'react-bootstrap';
 import Item from './Item';
 import MobileItem from './MobileItem';
 import {Desktop, Mobile, Tablet} from '../helpers/mediaTypes';
@@ -16,6 +5,15 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowDown, faArrowUp} from '@fortawesome/free-solid-svg-icons';
 import {SORT_FIELDS, SORT_FIELDS_DISPLAY_NAMES, SORT_ORDERS} from '../helpers/constants';
 import {AuctionGraph} from './graph/AuctionGraph';
+import {SPINNER_DOM} from '../helpers/domHelpers';
+import Modal from 'react-bootstrap/Modal';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Table from 'react-bootstrap/Table';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
 const React = require('react');
 
 const TIMESPAN_RADIOS = [
@@ -30,11 +28,7 @@ export default class AuctionTable extends React.Component {
 
     const show = item !== null;
     const hide = () => {this.props.onCloseModal()};
-    const spinner = <Container style={{display: 'flex', justifyContent: 'center'}}>
-      <Spinner variant='info' animation="border" role="status">
-        <span className="sr-only">Loading graph...</span>
-      </Spinner>
-    </Container>;
+    const spinner = SPINNER_DOM;
 
     if (!item) {
       return null;
@@ -126,13 +120,7 @@ export default class AuctionTable extends React.Component {
     let {items} = this.props;
 
     if (!items || this.props.loading) {
-      return (
-        <Container style={{flex: 1, display: 'flex', marginTop: 35, justifyContent: 'center'}}>
-          <Spinner variant='info' animation="border" role="status">
-            <span className="sr-only">Loading...</span>
-          </Spinner>
-        </Container>
-      )
+      return SPINNER_DOM;
     }
 
     if (this.props.hasSearched === false && items.length === 0) {

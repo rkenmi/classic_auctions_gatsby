@@ -6,7 +6,7 @@ const React = require('react');
 class PrivacyPolicy extends React.Component {
 	render() {
 		return (
-		  <Layout>
+      <Layout metaInfo={{subtitle: 'Privacy Policy', description: 'Details for Classic AH Privacy Policy'}}>
         <Container style={{color: '#fff', paddingTop: 80, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
           <div style={{display: 'flex', justifyContent: 'center'}}>
             <a href={'https://classic-ah.com'}>

@@ -1,37 +1,18 @@
-import {Container, Spinner} from 'react-bootstrap';
-import AuctionHouse from '../pages/search';
+import AuctionHouse from '../pages/index';
 import {connect} from 'react-redux';
 import {
-  autocomplete,
-  getEmptyLabelString,
-  keysPressed,
-  pickSuggestion,
-  setCurrentFaction,
-  setCurrentRealm,
-  setError,
-  search,
-  updateSearchQuery,
-  setMobileNavExpanded,
-  updatePageNum,
-  loadFromURL,
-  searchOnSetRealmAndFaction,
   searchOnSetSort,
-  convertSortParamsToURLParams, getMarketpriceData, hideGraphModal, setTimespanOnGraph, getAllMarketpriceData
+  getAllMarketpriceData, searchOnSetRealmAndFaction, setPageContext
 } from '../actions/actions';
 import {SORT_FIELDS, SORT_ORDERS, TIMESPAN_DISPLAY} from '../helpers/constants';
 import {AuctionGraph} from '../widgets/graph/AuctionGraph';
 import {getColorCode} from '../helpers/searchHelpers';
 import {WoWMoney} from '../widgets/WoWMoney';
 import {Desktop, Mobile, Tablet} from '../helpers/mediaTypes';
+import Layout from '../components/Layout';
+import Container from 'react-bootstrap/Container';
+import {SPINNER_DOM} from '../helpers/domHelpers';
 const React = require('react');
-
-const SPINNER_DOM = (
-  <Container style={{flex: 1, display: 'flex', marginTop: 35, justifyContent: 'center'}}>
-    <Spinner variant='info' animation="border" role="status">
-      <span className="sr-only">Loading...</span>
-    </Spinner>
-  </Container>
-);
 
 class ItemTooltip extends React.Component {
   render() {
@@ -66,6 +47,8 @@ class ItemTooltip extends React.Component {
       } else if (line['label'].includes("Sell Price")) {
         // Sell by
         return <span style={style} key={`tooltip-${item.id}-${i}`}><WoWMoney text={line['label']} money={item.sellPrice}/></span>
+      } else if (line['label'].includes("Use:")) {
+        style['color'] = getColorCode('Uncommon');
       }
 
       return (
@@ -83,11 +66,12 @@ class ItemTooltip extends React.Component {
 
 class ItemTemplate extends React.Component {
   componentDidMount() {
-    const {currentRealm, currentFaction, pageContext: {item}} = this.props;
-    if (currentRealm && currentFaction) {
-      this.props.searchOnSort(SORT_FIELDS.BUYOUT, SORT_ORDERS.ASCENDING, this.props.pageContext.item.name);
-      this.props.loadAllGraphs(item, currentRealm, currentFaction);
-    }
+    const {pageContext: {item}} = this.props;
+    this.props.setPageContext(item);
+  }
+
+  componentWillUnmount() {
+    this.props.setPageContext(null);
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -135,8 +119,7 @@ class ItemTemplate extends React.Component {
   }
 
   _getViewElements() {
-    const {location, currentRealm, currentFaction, graph, loading, items, pageContext: { item } } = this.props;
-    const {item: graphItem, prices, itemPagePrices, loading: graphLoading} = graph;
+    const {currentRealm, currentFaction, items, pageContext: { item } } = this.props;
     const imgHref = 'https://render-classic-us.worldofwarcraft.com/icons/56/' + item.icon + '.jpg';
     const itemTitle = <span className={'table-row-search-icon'}
                             style={{display: 'flex', justifyContent: 'space-between', backgroundImage: 'url("'+imgHref+'")'}}>
@@ -165,8 +148,8 @@ class ItemTemplate extends React.Component {
   }
 
   _renderDesktopView() {
-    const {location, currentRealm, currentFaction, graph, loading, items, pageContext: { item } } = this.props;
-    const {item: graphItem, prices, itemPagePrices, loading: graphLoading} = graph;
+    const {graph, pageContext: { item } } = this.props;
+    const {item: graphItem, itemPagePrices} = graph;
     const {itemTitle, cheapestItems, noPriceData} = this._getViewElements();
 
     return (
@@ -186,7 +169,7 @@ class ItemTemplate extends React.Component {
             <h4 style={{color: 'turquoise', marginBottom: 15}}>Cheapest Buyouts</h4>
             {noPriceData ? noPriceData :
               cheapestItems.map(
-                (cheapestItem) => <WoWMoney text={`${cheapestItem.seller}: x${cheapestItem.quantity}`} money={cheapestItem.buyout}/>
+                (cheapestItem, i) => <WoWMoney key={`item$${i}-D`} text={`${cheapestItem.seller}: x${cheapestItem.quantity}`} money={cheapestItem.buyout}/>
               )}
           </div>
         </div>
@@ -196,8 +179,8 @@ class ItemTemplate extends React.Component {
   }
 
   _renderMobileView() {
-    const {location, currentRealm, currentFaction, graph, loading, items, pageContext: { item } } = this.props;
-    const {item: graphItem, prices, itemPagePrices, loading: graphLoading} = graph;
+    const {graph, pageContext: { item } } = this.props;
+    const {item: graphItem, itemPagePrices} = graph;
     const {itemTitle, cheapestItems, noPriceData} = this._getViewElements();
 
     return (
@@ -218,7 +201,7 @@ class ItemTemplate extends React.Component {
           <h4 style={{color: 'turquoise', marginBottom: 15}}>Cheapest Buyouts</h4>
           {noPriceData ? noPriceData :
             cheapestItems.map(
-              (cheapestItem) => <WoWMoney text={`${cheapestItem.seller}: x${cheapestItem.quantity}`} money={cheapestItem.buyout}/>
+              (cheapestItem, i) => <WoWMoney key={`item$${i}-M`} text={`${cheapestItem.seller}: x${cheapestItem.quantity}`} money={cheapestItem.buyout}/>
             )}
         </div>
         {this.renderAllGraphs(itemPagePrices, graphItem, true)}
@@ -227,20 +210,28 @@ class ItemTemplate extends React.Component {
   }
 
   render() {
-    const {location} = this.props;
+    const {location, currentRealm, currentFaction, realms, pageContext: { item } } = this.props;
+
+    let subtitle = `Item - ${item.name}`;
+    if (currentRealm && currentFaction) {
+      subtitle = `Item - ${currentRealm} - ${currentFaction} | ${item.name}`
+    }
 
     return (
-      <AuctionHouse location={location}>
-        <Desktop>
-          {this._renderDesktopView()}
-        </Desktop>
-        <Mobile>
-          {this._renderMobileView()}
-        </Mobile>
-        <Tablet>
-          {this._renderMobileView()}
-        </Tablet>
-      </AuctionHouse>
+      <Layout metaInfo={{subtitle, description: `Classic WoW item data for ${item.name}`}}>
+        <AuctionHouse
+          noLayout location={location}>
+          <Desktop>
+            {this._renderDesktopView()}
+          </Desktop>
+          <Mobile>
+            {this._renderMobileView()}
+          </Mobile>
+          <Tablet>
+            {this._renderMobileView()}
+          </Tablet>
+        </AuctionHouse>
+      </Layout>
     )
   }
 }
@@ -250,78 +241,27 @@ function mapStateToProps(state) {
     searchBarRef: state.visibilityReducer.searchBarRef,
     loading: state.pageReducer.loading,
     graph: state.pageReducer.graph,
-    hasSearched: state.pageReducer.hasSearched,
-    queryMs: state.pageReducer.queryMs,
-    sort: state.pageReducer.sort,
-    page: state.pageReducer.page,
-    realms: state.pageReducer.realms,
     items: state.pageReducer.items,
-    count: state.pageReducer.count,
+    realms: state.pageReducer.realms,
     query: state.pageReducer.query,
-    suggestions: state.pageReducer.suggestions,
     currentRealm: state.pageReducer.currentRealm,
     currentFaction: state.pageReducer.currentFaction,
-    mobileNavExpanded: state.pageReducer.mobileNavExpanded,
-    errorTitle: state.pageReducer.errorTitle,
-    errorMessage: state.pageReducer.errorMessage
   }
 }
 
-
 function mapDispatchToProps(dispatch) {
   return {
-    setCurrentRealmAndFactionAndSearch: (realm, faction) => {
-      dispatch(searchOnSetRealmAndFaction(realm, faction));
-    },
-    setCurrentRealm: (realm) => {
-      dispatch(setCurrentRealm(realm));
-    },
-    setCurrentFaction: (faction) => {
-      dispatch(setCurrentFaction(faction));
-    },
-    searchOnSort: (field, order, query, pushHistory=false) => {
-      dispatch(searchOnSetSort(field, order, query, pushHistory));
+    searchOnSort: (field, order, query) => {
+      dispatch(searchOnSetSort(field, order, query, false));
     },
     loadAllGraphs: (item, realm, faction) => {
       dispatch(getAllMarketpriceData(item, realm, faction));
     },
-    hideGraph: () => {
-      dispatch(hideGraphModal());
+    setPageContext: (item) => {
+      dispatch(setPageContext(item));
     },
-    getEmptyLabelString: () => {
-      dispatch(getEmptyLabelString())
-    },
-    updateQuery: (q) => {
-      dispatch(updateSearchQuery(q))
-    },
-    updatePageNum: (p) => {
-      dispatch(updatePageNum(p))
-    },
-    onHandleAutoComplete: (evt) => {
-      dispatch(autocomplete(evt))
-    },
-    onPickSuggestion: (evt) => {
-      dispatch(pickSuggestion(evt))
-    },
-    onKeyPressed: (evt, isDesktop=true) => {
-      dispatch(keysPressed(evt, isDesktop))
-    },
-    onSearch: (pageNum, overrideQuery=null) => {
-      dispatch(search(pageNum, overrideQuery))
-    },
-    setMobileNavExpanded: (expanded) => {
-      dispatch(setMobileNavExpanded(expanded))
-    },
-    onSetTimespan: (timespan, item) => {
-      dispatch(setTimespanOnGraph(timespan, item));
-    },
-    setError: (title, message) => {
-      dispatch(setError(title, message));
-    },
-    loadFromURLParams: (query, page, currentRealm, currentFaction, sortField, sortFieldOrder) => {
-      dispatch(loadFromURL(query, page, currentRealm, currentFaction, sortField, sortFieldOrder));
-    }
   }
 }
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(ItemTemplate)
