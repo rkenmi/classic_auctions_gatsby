@@ -167,7 +167,7 @@ class AuctionHouse extends React.Component{
     }
 
     const content = children && location.pathname ? children : (
-      <Container>
+      <Container style={{padding: 0}}>
         <AuctionTable
           loading={loading}
           page={page}
