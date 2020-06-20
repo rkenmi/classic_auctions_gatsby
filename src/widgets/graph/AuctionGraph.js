@@ -23,7 +23,7 @@ export class AuctionGraph extends PureComponent {
     }
 
     return (
-      <ResponsiveContainer width={'90%'} height={300}>
+      <ResponsiveContainer width={'100%'} height={300}>
         <ComposedChart data={prices}
                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -42,6 +42,7 @@ export class AuctionGraph extends PureComponent {
                  scale={'time'}
                  height={60}
                  tick={<CustomizedAxisTick timespan={timespan}/>}
+                 interval={5}
                  domain={[
                    startDate,
                    moment().valueOf(),

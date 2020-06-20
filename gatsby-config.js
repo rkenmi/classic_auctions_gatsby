@@ -18,21 +18,27 @@ module.exports = {
         publisherId: `ca-pub-5441241398898122`
       },
     },
-    {
-      resolve: `gatsby-plugin-prefetch-google-fonts`,
-      options: {
-        fonts: [
-          {
-            family: `Raleway`,
-          }
-        ]
-      }
-    },
+    // {
+    //   resolve: `gatsby-plugin-prefetch-google-fonts`,
+    //   options: {
+    //     fonts: [
+    //       {
+    //         family: `Raleway`,
+    //       }
+    //     ]
+    //   }
+    // },
     `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-plugin-s3`,
       options: {
         bucketName: "classic-ah.com",
+      },
+    },
+    {
+      resolve: "gatsby-plugin-load-script",
+      options: {
+        src: "https://wow.zamimg.com/widgets/power.js",
       },
     },
     {

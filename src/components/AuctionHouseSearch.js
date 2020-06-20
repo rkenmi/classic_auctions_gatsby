@@ -16,6 +16,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import DropdownItem from 'react-bootstrap/DropdownItem';
+import {Link} from 'gatsby';
 
 class AuctionHouseSearch extends React.Component {
 
@@ -29,34 +30,40 @@ class AuctionHouseSearch extends React.Component {
 
     return (
       <div key={'search-anchor-' + index}>
-        <a data-wh-icon-size="small" data-entity-has-icon={"true"} href={'#'}
-           className={'search-anchor'}
-           onClick={(e) => {
-             e.preventDefault();
-             e.currentTarget.dispatchEvent(new MouseEvent("mouseout"))
-           }}
-           target={'_blank'}
-           data-wowhead={'item=' + result.id + '&domain=classic'}
-           style={{flex: 1}}>
             <TypeaheadMenuItem as={'span'} bsPrefix='suggestion-dropdown-item'
                                position={index}
+                               style={{cursor: 'pointer'}}
                                option={result} active={result.itemName === this.props.query}>
-              <div className={'suggestion-search-icon'}
-                   style={{display: 'flex', justifyContent: 'space-between', backgroundImage: 'url("'+iconUrl+'")'}}>
-                <div>
-                  <span style={{color: getColorCode(result.quality)}}>{result.itemName}</span>
-                </div>
-                <Desktop>
-                  <span style={{display: 'flex', color: '#fff', textDecoration: 'none', justifyContent: 'flex-end', alignItems: 'center', fontSize: 10}}>
-                    {result.classType}
-                  </span>
-                </Desktop>
-                <Mobile>
-                  {null}
-                </Mobile>
-              </div>
+              <Link to={'#'}
+                    className={'search-anchor'}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.dispatchEvent(new MouseEvent("mouseout"))
+                    }}
+                    target={'_blank'}
+                    style={{
+                      textDecoration: 'none'
+                    }}
+                    rel={'item=' + result.id}
+                    data-wowhead={'item=' + result.id + '&domain=classic'}
+              >
+                <img src={iconUrl} alt="suggestion icon" style={{height: 24, marginRight: 10}}/>
+                <span style={{color: getColorCode(result.quality)}}>{result.itemName}</span>
+                <span style={{color: getColorCode('Misc'), marginLeft: 10, fontSize: 10}}>
+                  {result.classType}
+                </span>
+                {/*<div className={'suggestion-search-icon'}*/}
+                {/*     style={{display: 'flex', justifyContent: 'space-between', backgroundImage: 'url("'+iconUrl+'")'}}>*/}
+                {/*  <div>*/}
+                {/*  </div>*/}
+                {/*  <Desktop>*/}
+                {/*    <span style={{display: 'flex', color: '#fff', textDecoration: 'none', justifyContent: 'flex-end', alignItems: 'center', fontSize: 10}}>*/}
+                {/*      {result.classType}*/}
+                {/*    </span>*/}
+                {/*  </Desktop>*/}
+                {/*</div>*/}
+              </Link>
             </TypeaheadMenuItem>
-        </a>
       </div>
     );
   }

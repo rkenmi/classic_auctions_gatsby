@@ -33,10 +33,9 @@ export function getParamsFromURL(search) {
 
 export function hideSuggestionItemsTooltip() {
   // Remove tooltip if the tooltip is currently hovering
-  const anchors = document.getElementsByClassName('search-anchor');
-  Array.from(anchors).forEach((elem) => {
-    elem.dispatchEvent(new MouseEvent("mouseout"));
-  });
+  if (window && window.WH && window.WH.Tooltip) {
+    window.WH.Tooltip.hide();
+  }
 }
 
 export const getColorCode = (quality) => {

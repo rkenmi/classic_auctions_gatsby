@@ -6,12 +6,13 @@ import {
 } from '../actions/actions';
 import {SORT_FIELDS, SORT_ORDERS, TIMESPAN_DISPLAY} from '../helpers/constants';
 import {AuctionGraph} from '../widgets/graph/AuctionGraph';
-import {getColorCode} from '../helpers/searchHelpers';
+import {getColorCode, hideSuggestionItemsTooltip} from '../helpers/searchHelpers';
 import {WoWMoney} from '../widgets/WoWMoney';
 import {Desktop, Mobile, Tablet} from '../helpers/mediaTypes';
 import Layout from '../components/Layout';
 import Container from 'react-bootstrap/Container';
-import {SPINNER_DOM} from '../helpers/domHelpers';
+import {getItemizedLink, SPINNER_DOM} from '../helpers/domHelpers';
+import moment from 'moment';
 const React = require('react');
 
 class ItemTooltip extends React.Component {
@@ -23,18 +24,21 @@ class ItemTooltip extends React.Component {
       hasSubtype = tooltip[4].format === 'alignRight';
     }
 
-    const tooltipDOM = tooltip.map((line, i) => {
+    let mainTooltipDone = false;
+
+
+    const tt = tooltip.filter(line => !line['label'].includes('Drop'));
+    const tooltipDOM = tt.map((line, i) => {
       const {format} = line;
-      let style={display: 'block'};
-      if (line['label'].includes("Dropped")) {
-        return null;
-      } else if (hasSubtype && (i === 3 || i === 4)) {
+      let style = {display: 'block', fontSize: mainTooltipDone ? 12 : 15};
+
+      if (hasSubtype && (i === 3 || i === 4)) {
         style['display'] = 'inline';
         if (i === 3) {
           return (
             <div style={{'display': 'flex'}} key={`tooltip-${item.id}-${i}`}>
-              <span style={{width: '100%', justifyContent: 'flex-start'}}>{tooltip[i].label}</span>
-              <span style={{justifyContent: 'flex-end'}}>{tooltip[i+1].label}</span>
+              <span style={{width: '100%', justifyContent: 'flex-start'}}>{tt[i].label}</span>
+              <span style={{justifyContent: 'flex-end'}}>{tt[i+1].label}</span>
             </div>
           )
         } else {
@@ -45,6 +49,8 @@ class ItemTooltip extends React.Component {
       } else if (format === 'Uncommon' || format === 'Epic' || format === 'Misc' || format === 'Poor' || format === 'Rare') {
         style['color'] = getColorCode(format);
       } else if (line['label'].includes("Sell Price")) {
+        mainTooltipDone = true;
+        style['paddingBottom'] = i === (tt.length - 1) ? 0 : 20;
         // Sell by
         return <span style={style} key={`tooltip-${item.id}-${i}`}><WoWMoney text={line['label']} money={item.sellPrice}/></span>
       } else if (line['label'].includes("Use:")) {
@@ -66,8 +72,13 @@ class ItemTooltip extends React.Component {
 
 class ItemTemplate extends React.Component {
   componentDidMount() {
-    const {pageContext: {item}} = this.props;
+    const {currentRealm, currentFaction, pageContext: {item}} = this.props;
     this.props.setPageContext(item);
+    if (currentFaction && currentRealm) {
+      this.props.searchOnSort(SORT_FIELDS.BUYOUT, SORT_ORDERS.ASCENDING, item.name);
+      this.props.loadAllGraphs(item, currentRealm, currentFaction);
+    }
+    hideSuggestionItemsTooltip();
   }
 
   componentWillUnmount() {
@@ -121,14 +132,7 @@ class ItemTemplate extends React.Component {
   _getViewElements() {
     const {currentRealm, currentFaction, items, pageContext: { item } } = this.props;
     const imgHref = 'https://render-classic-us.worldofwarcraft.com/icons/56/' + item.icon + '.jpg';
-    const itemTitle = <span className={'table-row-search-icon'}
-                            style={{display: 'flex', justifyContent: 'space-between', backgroundImage: 'url("'+imgHref+'")'}}>
-              <span style={{display: 'flex'}}>
-                <span style={{marginLeft: 50, display: 'flex', alignItems: 'center'}}>
-                  {item.name}
-                </span>
-              </span>
-            </span>;
+    const itemTitle = getItemizedLink(item, imgHref);
 
     const filteredItems = items.filter(row => row.buyout > 0);
     const cheapestItems = filteredItems.map((i) => {
@@ -145,6 +149,24 @@ class ItemTemplate extends React.Component {
     }
 
     return {itemTitle, cheapestItems, noPriceData};
+  }
+
+  _renderCheapestItems(noPriceData, cheapestItems) {
+    let dateStr;
+    if (cheapestItems && cheapestItems.length > 0) {
+      dateStr = moment(new Date(cheapestItems[0].timestamp)).fromNow();
+    }
+
+    return (
+      <div style={{flex: 1, margin: 30}}>
+        <h4 style={{color: 'turquoise', marginBottom: 15}}>Cheapest Buyouts</h4>
+        {noPriceData ? noPriceData :
+          cheapestItems.map(
+            (cheapestItem, i) => <WoWMoney key={`item$${i}-D`} text={`${cheapestItem.seller}: x${cheapestItem.quantity}`} money={cheapestItem.buyout}/>
+          )}
+        <span style={{fontSize: 10, color: getColorCode('Misc')}}>{`Last scanned: ${dateStr}`}</span>
+      </div>
+    )
   }
 
   _renderDesktopView() {
@@ -165,15 +187,9 @@ class ItemTemplate extends React.Component {
             {<ItemTooltip item={item} tooltip={item.tooltip}/>}
             <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
           </div>
-          <div style={{flex: 1, margin: 30}}>
-            <h4 style={{color: 'turquoise', marginBottom: 15}}>Cheapest Buyouts</h4>
-            {noPriceData ? noPriceData :
-              cheapestItems.map(
-                (cheapestItem, i) => <WoWMoney key={`item$${i}-D`} text={`${cheapestItem.seller}: x${cheapestItem.quantity}`} money={cheapestItem.buyout}/>
-              )}
-          </div>
+          {this._renderCheapestItems(noPriceData, cheapestItems)}
         </div>
-        {this.renderAllGraphs(itemPagePrices, graphItem)}
+        {this.renderAllGraphs(itemPagePrices, item)}
       </Container>
     )
   }
@@ -184,7 +200,7 @@ class ItemTemplate extends React.Component {
     const {itemTitle, cheapestItems, noPriceData} = this._getViewElements();
 
     return (
-      <Container style={{color: '#fff', paddingTop: 60, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
+      <Container style={{color: '#fff', paddingTop: 0, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
         <div style={{margin: 30, display: 'flex'}}>
           <h3>
             {itemTitle}
@@ -197,14 +213,8 @@ class ItemTemplate extends React.Component {
             <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
           </div>
         </div>
-        <div style={{flex: 1, margin: 30}}>
-          <h4 style={{color: 'turquoise', marginBottom: 15}}>Cheapest Buyouts</h4>
-          {noPriceData ? noPriceData :
-            cheapestItems.map(
-              (cheapestItem, i) => <WoWMoney key={`item$${i}-M`} text={`${cheapestItem.seller}: x${cheapestItem.quantity}`} money={cheapestItem.buyout}/>
-            )}
-        </div>
-        {this.renderAllGraphs(itemPagePrices, graphItem, true)}
+        {this._renderCheapestItems(noPriceData, cheapestItems)}
+        {this.renderAllGraphs(itemPagePrices, item, true)}
       </Container>
     )
   }

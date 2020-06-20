@@ -5,7 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowDown, faArrowUp} from '@fortawesome/free-solid-svg-icons';
 import {SORT_FIELDS, SORT_FIELDS_DISPLAY_NAMES, SORT_ORDERS} from '../helpers/constants';
 import {AuctionGraph} from './graph/AuctionGraph';
-import {SPINNER_DOM} from '../helpers/domHelpers';
+import {getItemizedLink, SPINNER_DOM} from '../helpers/domHelpers';
 import Modal from 'react-bootstrap/Modal';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
@@ -41,16 +41,7 @@ export default class AuctionTable extends React.Component {
       <Modal show={show} onHide={hide}>
         <Modal.Header closeButton>
           <Modal.Title><h4>
-          <a style={{color: '#000'}} href={'https://classicdb.ch/?item=' + id} target={'_blank'} rel={'noreferrer'} data-wowhead={'item=' + id + '&domain=classic'}>
-            <span className={'table-row-search-icon'}
-                  style={{display: 'flex', justifyContent: 'space-between', backgroundImage: 'url("'+imgHref+'")'}}>
-              <span style={{display: 'flex'}}>
-                <span style={{marginLeft: 50, display: 'flex', alignItems: 'center'}}>
-                    {item ? item.itemName : null}
-                </span>
-              </span>
-            </span>
-          </a>
+            {getItemizedLink(metaItem, imgHref, true)}
           </h4></Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -147,7 +138,7 @@ export default class AuctionTable extends React.Component {
             <tbody>
             {this.renderGraphModal()}
             <tr>
-              <th style={{width: '5%', alignItems: 'center'}}>
+              <th style={{width: '35%', alignItems: 'center'}}>
                 <DropdownButton
                   style={{display: 'flex'}}
                   bsPrefix={'invis'}
@@ -156,13 +147,12 @@ export default class AuctionTable extends React.Component {
                   variant={'info'}
                   title={this.getColumnHeaderSortedTitle(SORT_FIELDS.QUANTITY)}
                 >
-                  <Dropdown.Header>Order by</Dropdown.Header>
+                  <Dropdown.Header>Order by Quantity</Dropdown.Header>
                   <Dropdown.Divider />
                   <Dropdown.Item onClick={() => this.props.searchOnSort(SORT_FIELDS.QUANTITY, SORT_ORDERS.ASCENDING)}>Low to High</Dropdown.Item>
                   <Dropdown.Item onClick={() => this.props.searchOnSort(SORT_FIELDS.QUANTITY, SORT_ORDERS.DESCENDING)}>High to Low</Dropdown.Item>
                 </DropdownButton>
               </th>
-              <th style={{width: '30%'}}>Name</th>
               <th style={{width: '5%'}}>Req</th>
               <th style={{width: '30%', justifyContent: 'space-between', alignItems: 'center'}}>
                 <DropdownButton

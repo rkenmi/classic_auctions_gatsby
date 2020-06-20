@@ -108,12 +108,12 @@ h1 > span, h2 > span, h3 > span{
 }
 
 #ah-typeahead {
-    background-color: #555;
+    background-color: #333;
 }
 
 .wowhead-tooltip-powered {
-    background: none;
-    display: none;
+    background: none !important;
+    display: none !important;
 }
 
 .suggestion-dropdown-item {
@@ -122,10 +122,8 @@ h1 > span, h2 > span, h3 > span{
     padding: 0.25rem 1.5rem;
     clear: both;
     font-weight: 400;
-    /*color: #212529;*/
     text-align: inherit;
     white-space: nowrap;
-    background-color: #555;
     border: 0;
 }
 
@@ -141,6 +139,14 @@ h1 > span, h2 > span, h3 > span{
     background-image: url("https://d2b9gcya89vi12.cloudfront.net/ico/misc/socket-lg.png");
     background-size: 45px;
     height: 45px;
+}
+
+.icon-wrapper {
+    background-position: 4px 6px;
+    background-repeat: no-repeat;
+    background-image: url("https://d2b9gcya89vi12.cloudfront.net/ico/misc/socket-lg.png");
+    background-size: 40px;
+    display: inline-block;
 }
 
 
@@ -161,12 +167,12 @@ h1 > span, h2 > span, h3 > span{
 
 .suggestion-dropdown-item:hover, .suggestion-dropdown-item:focus {
     text-decoration: none;
-    background-color: #333;
+    background-color: #555;
 }
 
 .suggestion-dropdown-item.active, .suggestion-dropdown-item:active {
     text-decoration: none;
-    background-color: #263238;
+    background-color: #163238;
 }
 
 .suggestion-dropdown-item.disabled, .suggestion-dropdown-item:disabled {

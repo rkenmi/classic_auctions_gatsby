@@ -52,7 +52,12 @@ class AuctionHouse extends React.Component{
   componentDidMount() {
     this.setState({
       loadPage: true
-    })
+    });
+
+    // const script = document.createElement("script");
+    // script.src = 'https://wow.zamimg.com/widgets/power.js';
+    // // script.async = true;
+    // document.body.appendChild(script);
   }
 
   getMobileSortedDropdownTitle() {
@@ -128,7 +133,8 @@ class AuctionHouse extends React.Component{
               onKeyDown={(e) => this.props.onKeyPressed(e, false)}
             />
             <div style={{display: 'flex', flex: 1, flexDirection: 'row', justifyContent: 'flex-start', marginTop: 15, marginBottom: 5}}>
-              <RealmDropdown currentRealm={currentRealm}
+              <RealmDropdown style={{marginLeft: 0}}
+                             currentRealm={currentRealm}
                              currentFaction={currentFaction}
                              onSelectRealmAndFaction={this.props.setCurrentRealmAndFactionAndSearch}
                              realms={realms}/>

@@ -6,6 +6,8 @@ import {Link} from 'gatsby';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChartBar} from '@fortawesome/free-solid-svg-icons';
 import Button from 'react-bootstrap/Button';
+import {getQuantityDOM} from '../helpers/domHelpers';
+import {SOCKET} from '../helpers/endpoints';
 
 const React = require('react');
 
@@ -46,20 +48,22 @@ export default class Item extends React.Component{
   renderSlideOne() {
     const {metaItem, id, itemName, bid, buyout, seller, timeRemaining, quantity} = this.props.features;
     const imgHref = 'https://render-classic-us.worldofwarcraft.com/icons/56/' + metaItem.icon + '.jpg';
+
+    const quantityDOM = getQuantityDOM(quantity);
+
     return (
       <div style={{padding: 10}}>
               <span style={{display: 'flex', flex: 1}}>
-                <Link style={{color: getColorCode(metaItem.quality)}} to={'/item/' + id} target={'_blank'} data-wowhead={'item=' + id + '&domain=classic'}>
-                  <span className={'table-row-search-icon'}
-                        style={{display: 'flex', justifyContent: 'space-between', backgroundImage: 'url("'+imgHref+'")'}}>
-                    <span style={{display: 'flex'}}>
-                      <span style={{marginLeft: 50, display: 'flex', alignItems: 'center'}}>
-                        {itemName}
-                      </span>
-                    </span>
+                <Link style={{color: getColorCode(metaItem.quality)}} to={'/item/' + id}>
+                  <span style={{backgroundImage: 'url("'+imgHref+'")'}}  className={'icon-wrapper'}>
+                    {quantityDOM}
+                    <img src={SOCKET} alt="suggestion icon" style={{height: 50, marginRight: 10}}/>
+                  </span>
+                  <span style={{alignItems: 'center'}}>
+                    {itemName}
                   </span>
                 </Link>
-                <span style={{color: '#fff', marginLeft: 5, display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-start'}}> x {quantity}</span>
+                <span style={{display: 'flex', flex: 1}}/>
                 <Button size='sm' style={{height: 30, marginTop: 3, marginRight: 3}} variant={'info'} onClick={this.props.onClickGraph}>
                   <FontAwesomeIcon icon={faChartBar} />
                 </Button>

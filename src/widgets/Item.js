@@ -5,6 +5,8 @@ import {faChartBar} from '@fortawesome/free-solid-svg-icons';
 import {Link} from 'gatsby';
 import {WoWMoney} from './WoWMoney';
 import Button from 'react-bootstrap/Button';
+import {MISC_URL, SOCKET} from '../helpers/endpoints';
+import {getQuantityDOM} from '../helpers/domHelpers';
 
 const React = require('react');
 
@@ -31,18 +33,18 @@ export default class Item extends React.Component{
     const {metaItem, id, itemName, bid, buyout, seller, timeRemaining, quantity} = this.props.features;
     const imgHref = 'https://render-classic-us.worldofwarcraft.com/icons/56/' + metaItem.icon + '.jpg';
 
+    const quantityDOM = getQuantityDOM(quantity);
+
     return (
       <tr className={'align-middle'}>
-        <td className={'align-middle'}>{quantity}</td>
         <td className={'align-middle'} style={{ height: '75px'}}>
-          <Link style={{color: getColorCode(metaItem.quality)}} to={'/item/' + id} target={'_blank'} data-wowhead={'item=' + id + '&domain=classic'}>
-            <span className={'table-row-search-icon'}
-                  style={{display: 'flex', justifyContent: 'space-between', backgroundImage: 'url("'+imgHref+'")'}}>
-              <span style={{display: 'flex'}}>
-                <span style={{marginLeft: 50, display: 'flex', alignItems: 'center'}}>
-                  {itemName}
-                </span>
-              </span>
+          <Link className={'auction-table-item'} style={{alignItems: 'center', color: getColorCode(metaItem.quality)}} to={'/item/' + id} target={'_blank'} data-wowhead={'item=' + id + '&domain=classic'}>
+            <span style={{backgroundImage: 'url("'+imgHref+'")'}}  className={'icon-wrapper'}>
+              {quantityDOM}
+              <img src={SOCKET} alt="suggestion icon" style={{height: 50, marginRight: 10}}/>
+            </span>
+            <span style={{alignItems: 'center'}}>
+              {itemName}
             </span>
           </Link>
         </td>

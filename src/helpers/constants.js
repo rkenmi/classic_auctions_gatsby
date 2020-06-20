@@ -13,7 +13,7 @@ export const SORT_FIELDS = {
 };
 
 export const SORT_FIELDS_DISPLAY_NAMES = {
-  [SORT_FIELDS.QUANTITY]: 'Qty',
+  [SORT_FIELDS.QUANTITY]: 'Name',
   [SORT_FIELDS.BUYOUT]: 'Buyout',
   [SORT_FIELDS.BID]: 'Bid',
   [SORT_FIELDS.PRICE]: 'Price',  // TODO: remove this

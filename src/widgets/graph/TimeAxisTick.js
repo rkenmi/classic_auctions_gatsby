@@ -8,7 +8,7 @@ export class CustomizedAxisTick extends PureComponent {
   }
 
   format1Wk(tick) {
-    return moment(tick).format('MMM Do')
+    return moment(tick).format('M/D')
   }
 
   render() {

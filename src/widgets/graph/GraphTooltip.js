@@ -25,7 +25,10 @@ const renderMoney = (money) => {
 export const CustomTooltip = (props) => {
   const { active, payload, label, item}  = props;
 
-  const maxStack = item ? item.metaItem.maxStack : null;
+  let maxStack;
+  if (item) {
+    maxStack = item.metaItem ? item.metaItem.maxStack : item.maxStack;
+  }
 
   const formatTick = (tick) => moment(tick).format('M/D h:mm a');
   if (active) {

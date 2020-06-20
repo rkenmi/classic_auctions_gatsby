@@ -2,16 +2,16 @@ import {connect} from 'react-redux';
 import {Link} from 'gatsby';
 import moment from 'moment';
 import Container from 'react-bootstrap/Container';
+import {useMediaQuery} from 'react-responsive';
 
 const React = require('react');
 
 const PageLinks = (props) => {
-  // const isDesktopOrLaptop = useMediaQuery({
-  //   query: '(min-device-width: 1224px)'
-  // });
-  //
-  // const footerWidth = isDesktopOrLaptop ? '20%' : '50%';
-  const footerWidth = '20%';
+  const isDesktopOrLaptop = useMediaQuery({
+    query: '(min-device-width: 1224px)'
+  });
+
+  const footerWidth = isDesktopOrLaptop ? '20%' : '75%';
 
   return (
     <div id={'ah-footer'} style={{
