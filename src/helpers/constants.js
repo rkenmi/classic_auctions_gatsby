@@ -26,9 +26,9 @@ export const SORT_ORDERS = {
 };
 
 export const TIMESPAN_DISPLAY = [
-  '12 Hour',
-  '1 Week',
-  '1 Month',
+  'Last 12 Hours',
+  'Last Week',
+  'Last Month',
 ];
 
 export const REALMS = [

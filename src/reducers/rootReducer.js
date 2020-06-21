@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux'
 import {
-  TOGGLE_TODO,
   SET_VISIBILITY_FILTER,
   VisibilityFilters,
   SET_ERROR,
@@ -19,7 +18,7 @@ import {
   HIDE_GRAPH_MODAL,
   SET_TIMESPAN,
   UPDATE_ITEM_PAGE_GRAPH_DATA,
-  LOAD_GRAPH_SPINNER, SET_PAGE_CONTEXT, SEARCH_STATE
+  LOAD_GRAPH_SPINNER, SET_PAGE_CONTEXT, SEARCH_STATE, UPDATE_CHEAPEST_BO_ITEM_PAGE, LOAD_PAGE
 } from '../actions/actions'
 import {REALMS} from '../helpers/constants';
 // import { connectRouter } from 'connected-react-router'
@@ -40,7 +39,7 @@ function visibilityReducer(state = SHOW_ALL, action) {
 }
 
 function pageReducer(state = {count: 0, realms: REALMS,suggestions: [], items: [], hasSearched: false, query: '', loading: false,
-  sort: {}, mobileNavExpanded: false, graph: {item: null, prices: [], timespan: 0}}, action)
+  sort: {}, pageLoading: false, mobileNavExpanded: false, graph: {item: null, prices: [], cheapestItems: [], timespan: 0}}, action)
 {
   switch (action.type) {
     case SEARCH_STATE:
@@ -81,6 +80,20 @@ function pageReducer(state = {count: 0, realms: REALMS,suggestions: [], items: [
           ...state.graph,
           loading: false,
           itemPagePrices: action.data
+        },
+      };
+    case LOAD_PAGE:
+      return {
+        ...state,
+        pageLoading: true
+      };
+    case UPDATE_CHEAPEST_BO_ITEM_PAGE:
+      return {
+        ...state,
+        pageLoading: false,
+        graph: {
+          ...state.graph,
+          cheapestItems: action.results
         },
       };
     case UPDATE_GRAPH_DATA:
@@ -125,6 +138,7 @@ function pageReducer(state = {count: 0, realms: REALMS,suggestions: [], items: [
       return {
         ...state,
         graph: {
+          ...state.graph,
           itemPagePrices: null,
           loading: true,
         }
@@ -157,15 +171,6 @@ function pageReducer(state = {count: 0, realms: REALMS,suggestions: [], items: [
           timespan: action.timespan
         },
       };
-    case TOGGLE_TODO:
-      return state.map((todo, index) => {
-        if (index === action.index) {
-          return Object.assign({}, todo, {
-            completed: !todo.completed
-          })
-        }
-        return todo
-      });
     case MOBILE_NAV_EXPANDED:
       return {
         ...state,

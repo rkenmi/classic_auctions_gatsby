@@ -1,8 +1,7 @@
 import AuctionHouse from '../pages/index';
 import {connect} from 'react-redux';
 import {
-  searchOnSetSort,
-  getAllMarketpriceData, searchOnSetRealmAndFaction, setPageContext
+  getAllMarketpriceData, setPageContext, getCheapestBuyout
 } from '../actions/actions';
 import {SORT_FIELDS, SORT_ORDERS, TIMESPAN_DISPLAY} from '../helpers/constants';
 import {AuctionGraph} from '../widgets/graph/AuctionGraph';
@@ -11,8 +10,9 @@ import {WoWMoney} from '../widgets/WoWMoney';
 import {Desktop, Mobile, Tablet} from '../helpers/mediaTypes';
 import Layout from '../components/Layout';
 import Container from 'react-bootstrap/Container';
-import {getItemizedLink, SPINNER_DOM} from '../helpers/domHelpers';
+import {getItemizedLink, getQuantityDOM, SPINNER_DOM} from '../helpers/domHelpers';
 import moment from 'moment';
+import {SOCKET} from '../helpers/endpoints';
 const React = require('react');
 
 class ItemTooltip extends React.Component {
@@ -75,7 +75,7 @@ class ItemTemplate extends React.Component {
     const {currentRealm, currentFaction, pageContext: {item}} = this.props;
     this.props.setPageContext(item);
     if (currentFaction && currentRealm) {
-      this.props.searchOnSort(SORT_FIELDS.BUYOUT, SORT_ORDERS.ASCENDING, item.name);
+      this.props.getCheapestItems(this.props.pageContext.item.name);
       this.props.loadAllGraphs(item, currentRealm, currentFaction);
     }
     hideSuggestionItemsTooltip();
@@ -88,83 +88,111 @@ class ItemTemplate extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     const {currentRealm, currentFaction, query, items, pageContext: {item}} = this.props;
     if (prevProps.currentRealm !== currentRealm || prevProps.currentFaction !== currentFaction) {
-      this.props.searchOnSort(SORT_FIELDS.BUYOUT, SORT_ORDERS.ASCENDING, this.props.pageContext.item.name);
+      this.props.getCheapestItems(this.props.pageContext.item.name);
       this.props.loadAllGraphs(item, currentRealm, currentFaction);
     }
   }
 
-  renderAllGraphs(itemPagePrices, graphItem, isMobile=false) {
+  renderAllGraphs(itemPagePrices, graphItem) {
     const {currentRealm, currentFaction, graph: {loading}} = this.props;
+    const flexDirection = 'column';
+
+    const getGraphDOM = (content) => (
+      <div style={{margin: 30}}>
+        <h4 style={{color: 'turquoise', marginBottom: 15}}>Graphs</h4>
+        <div style={{display: 'flex', flexDirection, alignItems: 'space-evenly'}}>
+          {content}
+        </div>
+      </div>
+    );
 
     if (!currentFaction || !currentRealm) {
-      return <div style={{display: 'flex', margin: 30, justifyContent: 'center'}}>Please select a realm and faction to view graph data</div>
+      return getGraphDOM('Please select a realm and faction to view graph data');
     }
 
     if (loading || !itemPagePrices) {
-      return SPINNER_DOM;
+      return getGraphDOM(SPINNER_DOM);
     }
 
-    if (isMobile) {
-      return (
-        <div style={{margin: 30}}>
-          {[0,1,2].map((timespan, i) =>
-            <div key={`graph-${timespan}`} style={{flex: 1}}>
-              <h4 style={{color: 'turquoise', marginBottom: 10}}>{TIMESPAN_DISPLAY[timespan]} View </h4>
+    return getGraphDOM(
+          [0,1,2].map((timespan, i) =>
+            <div key={`graph-${timespan}-${i}`} style={{flex: 1}}>
+              <h6 style={{color: getColorCode('Misc'), marginBottom: 10}}>{TIMESPAN_DISPLAY[timespan]}</h6>
               <AuctionGraph prices={itemPagePrices[timespan]} item={graphItem} timespan={timespan}/>
             </div>
-          )}
-        </div>
-      )
-    }
-
-    return (
-      <div style={{display: 'flex', alignItems: 'space-evenly', margin: 30}}>
-        {[0,1,2].map((timespan, i) =>
-          <div key={`graph-${timespan}`} style={{flex: 1}}>
-            <h4 style={{color: 'turquoise', marginBottom: 15}}>{TIMESPAN_DISPLAY[timespan]} View </h4>
-            <AuctionGraph prices={itemPagePrices[timespan]} item={graphItem} timespan={timespan}/>
-          </div>
-        )}
-      </div>
-    )
+          )
+    );
   }
 
   _getViewElements() {
-    const {currentRealm, currentFaction, items, pageContext: { item } } = this.props;
+    const {currentRealm, currentFaction, pageLoading, graph: {cheapestItems}, pageContext: { item } } = this.props;
     const imgHref = 'https://render-classic-us.worldofwarcraft.com/icons/56/' + item.icon + '.jpg';
     const itemTitle = getItemizedLink(item, imgHref);
-
-    const filteredItems = items.filter(row => row.buyout > 0);
-    const cheapestItems = filteredItems.map((i) => {
-      const ratio = i.buyout / i.quantity;
-      return {
-        ...i,
-        ratio
-      }
-    }).sort((a, b) => a.ratio - b.ratio).slice(0, 5);
 
     let noPriceData;
     if (!currentFaction || !currentRealm) {
       noPriceData = <div style={{display: 'flex'}}>Please select a realm and faction to view pricing data</div>
+    } else if (cheapestItems.length === 0) {
+      noPriceData = <div style={{display: 'flex'}}>No items found!</div>
     }
 
     return {itemTitle, cheapestItems, noPriceData};
   }
 
-  _renderCheapestItems(noPriceData, cheapestItems) {
-    let dateStr;
+  _renderCheapestItems(noPriceData, cheapestItems, isMobile=false) {
+    const {pageLoading} = this.props;
+    let dateDOM = null;
+
+    if (pageLoading) {
+      return SPINNER_DOM;
+    }
+
     if (cheapestItems && cheapestItems.length > 0) {
-      dateStr = moment(new Date(cheapestItems[0].timestamp)).fromNow();
+      const dateStr = moment(new Date(cheapestItems[0].timestamp)).fromNow();
+      dateDOM = <span style={{fontSize: 10, color: getColorCode('Misc')}}>{`Last scanned: ${dateStr}`}</span>;
+    }
+
+    const fImgHref = (metaItem) => 'https://render-classic-us.worldofwarcraft.com/icons/56/' + metaItem.icon + '.jpg';
+
+    const style = {};
+    if (isMobile) {
+      style['margin'] = 30;
+    } else {
+      style['marginTop'] = 30;
     }
 
     return (
-      <div style={{flex: 1, margin: 30}}>
+      <div style={style}>
         <h4 style={{color: 'turquoise', marginBottom: 15}}>Cheapest Buyouts</h4>
         {noPriceData ? noPriceData :
           cheapestItems.map(
-            (cheapestItem, i) => <WoWMoney key={`item$${i}-D`} text={`${cheapestItem.seller}: x${cheapestItem.quantity}`} money={cheapestItem.buyout}/>
+            (cheapestItem, i) => {
+              return <div key={`${cheapestItem.id}-${i}`} style={{display: 'flex', alignItems: 'center'}}>
+                <span style={{backgroundImage: 'url("'+fImgHref(cheapestItem.metaItem)+'")'}}  className={'icon-wrapper'}>
+                  {getQuantityDOM(cheapestItem.quantity)}
+                  <img src={SOCKET} alt="suggestion icon" style={{height: 50, marginRight: 10}}/>
+                </span>
+                <span style={{marginLeft: 15}}>
+                  {cheapestItem.seller}
+                </span>
+                <span style={{marginLeft: 15}}>
+                  <WoWMoney key={`item$${i}-D`} text={''}
+                            money={cheapestItem.buyout}/>
+                </span>
+              </div>
+            }
           )}
-        <span style={{fontSize: 10, color: getColorCode('Misc')}}>{`Last scanned: ${dateStr}`}</span>
+        {dateDOM}
+      </div>
+    )
+  }
+
+  _renderTitle(itemTitle) {
+    return (
+      <div style={{marginLeft: 30, display: 'flex'}}>
+        <h3>
+          {itemTitle}
+        </h3>
       </div>
     )
   }
@@ -176,20 +204,18 @@ class ItemTemplate extends React.Component {
 
     return (
       <Container style={{color: '#fff', paddingTop: 80, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
-        <div style={{marginLeft: 30, marginRight: 30, display: 'flex'}}>
-          <h3>
-            {itemTitle}
-          </h3>
-        </div>
-        <div style={{display: 'flex', alignItems: 'space-evenly'}}>
-          <div style={{flex: 1, margin: 30}}>
+        {this._renderTitle(itemTitle)}
+        <div style={{display: 'flex', flex: 1, alignItems: 'space-evenly'}}>
+          <div style={{margin: 30, flex: 0.3}}>
             <h4 style={{color: 'turquoise', marginBottom: 15}}>Stats</h4>
             {<ItemTooltip item={item} tooltip={item.tooltip}/>}
             <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
+            {this._renderCheapestItems(noPriceData, cheapestItems)}
           </div>
-          {this._renderCheapestItems(noPriceData, cheapestItems)}
+          <div style={{flex: 0.7}}>
+            {this.renderAllGraphs(itemPagePrices, item)}
+          </div>
         </div>
-        {this.renderAllGraphs(itemPagePrices, item)}
       </Container>
     )
   }
@@ -201,11 +227,7 @@ class ItemTemplate extends React.Component {
 
     return (
       <Container style={{color: '#fff', paddingTop: 0, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
-        <div style={{margin: 30, display: 'flex'}}>
-          <h3>
-            {itemTitle}
-          </h3>
-        </div>
+        {this._renderTitle(itemTitle)}
         <div style={{display: 'flex'}}>
           <div style={{flex: 1, margin: 30}}>
             <h4 style={{color: 'turquoise', marginBottom: 15}}>Stats</h4>
@@ -213,8 +235,8 @@ class ItemTemplate extends React.Component {
             <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
           </div>
         </div>
-        {this._renderCheapestItems(noPriceData, cheapestItems)}
-        {this.renderAllGraphs(itemPagePrices, item, true)}
+        {this._renderCheapestItems(noPriceData, cheapestItems, true)}
+        {this.renderAllGraphs(itemPagePrices, item)}
       </Container>
     )
   }
@@ -250,6 +272,7 @@ function mapStateToProps(state) {
   return {
     searchBarRef: state.visibilityReducer.searchBarRef,
     loading: state.pageReducer.loading,
+    pageLoading: state.pageReducer.pageLoading,
     graph: state.pageReducer.graph,
     items: state.pageReducer.items,
     realms: state.pageReducer.realms,
@@ -261,8 +284,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    searchOnSort: (field, order, query) => {
-      dispatch(searchOnSetSort(field, order, query, false));
+    getCheapestItems: (query) => {
+      dispatch(getCheapestBuyout(query));
     },
     loadAllGraphs: (item, realm, faction) => {
       dispatch(getAllMarketpriceData(item, realm, faction));

@@ -17,6 +17,7 @@ import {
   searchOnSetSort,
   convertSortParamsToURLParams, getMarketpriceData, hideGraphModal, setTimespanOnGraph, setSearchState
 } from '../actions/actions';
+import {Link} from 'gatsby';
 import AHSearchForm from '../components/AuctionHouseSearch';
 import RealmDropdown from '../widgets/RealmDropdown';
 import AuctionTable from '../widgets/AuctionTable';
@@ -53,11 +54,6 @@ class AuctionHouse extends React.Component{
     this.setState({
       loadPage: true
     });
-
-    // const script = document.createElement("script");
-    // script.src = 'https://wow.zamimg.com/widgets/power.js';
-    // // script.async = true;
-    // document.body.appendChild(script);
   }
 
   getMobileSortedDropdownTitle() {
@@ -91,8 +87,10 @@ class AuctionHouse extends React.Component{
 
     return (
       <Navbar variant="dark" style={{display: 'flex', paddingLeft: 0, paddingRight: 0}}>
-        <Navbar.Brand href="/">
-          <Logo/>
+        <Navbar.Brand>
+          <Link to={'/'} style={{textDecoration: 'none'}}>
+            <Logo/>
+          </Link>
         </Navbar.Brand>
         <Nav style={{flex: 1, justifyContent: 'flex-end'}}>
           <AHSearchForm
@@ -121,7 +119,9 @@ class AuctionHouse extends React.Component{
                 onToggle={()=> {this.props.setMobileNavExpanded(!mobileNavExpanded)} }
                 expanded={this.props.mobileNavExpanded}>
           <Navbar.Brand>
-            <Logo/>
+            <Link to={'/'} style={{textDecoration: 'none'}}>
+              <Logo/>
+            </Link>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse style={{justifyContent: 'center', marginTop: 5}} id="basic-navbar-nav">

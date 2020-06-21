@@ -9,6 +9,7 @@ module.exports = {
     title: `Classic AH WoW`,
     description: `Search engine for Auction House pricing data and graphs on Classic WoW`,
     author: `rkenmi`,
+    siteUrl: 'https://classic-ah.com'
   },
   plugins: [
     `gatsby-plugin-offline`,
@@ -18,17 +19,19 @@ module.exports = {
         publisherId: `ca-pub-5441241398898122`
       },
     },
-    // {
-    //   resolve: `gatsby-plugin-prefetch-google-fonts`,
-    //   options: {
-    //     fonts: [
-    //       {
-    //         family: `Raleway`,
-    //       }
-    //     ]
-    //   }
-    // },
+    {
+      resolve: `gatsby-plugin-preload-fonts`,
+    },
+    {
+      resolve: 'gatsby-plugin-robots-txt',
+      options: {
+        host: 'https://classic-ah.com',
+        sitemap: 'https://classic-ah.com/sitemap.xml',
+        policy: [{ userAgent: '*', allow: '/' }]
+      }
+    },
     `gatsby-plugin-react-helmet`,
+    `gatsby-plugin-sitemap`,
     {
       resolve: `gatsby-plugin-s3`,
       options: {

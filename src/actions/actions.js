@@ -14,7 +14,7 @@ export const SET_PAGE_CONTEXT = 'SET_PAGE_CONTEXT';
 export const SET_CURRENT_REALM = 'SET_CURRENT_REALM';
 export const SET_CURRENT_FACTION = 'SET_CURRENT_FACTION';
 export const SET_ERROR = 'SET_ERROR';
-export const TOGGLE_TODO = 'TOGGLE_TODO'
+export const LOAD_PAGE = 'LOAD_PAGE'
 export const OPEN_GRAPH_MODAL = 'OPEN_GRAPH_MODAL'
 export const HIDE_GRAPH_MODAL = 'HIDE_GRAPH_MODAL'
 export const SET_TIMESPAN = 'SET_TIMESPAN'
@@ -29,6 +29,7 @@ export const UPDATE_ITEM_PAGE_GRAPH_DATA = 'UPDATE_ITEM_PAGE_GRAPH_DATA'
 export const UPDATE_GRAPH_DATA = 'UPDATE_GRAPH_DATA'
 export const UPDATE_SEARCH_SUGGESTIONS = 'UPDATE_SEARCH_SUGGESTIONS'
 export const UPDATE_SEARCH_QUERY = 'UPDATE_SEARCH_QUERY'
+export const UPDATE_CHEAPEST_BO_ITEM_PAGE = 'UPDATE_CHEAPEST_BO_ITEM_PAGE'
 export const UPDATE_PAGE_NUM = 'UPDATE_PAGE_NUM'
 export const MOBILE_NAV_EXPANDED = 'MOBILE_NAV_EXPANDED'
 
@@ -78,8 +79,8 @@ export function setSearchBarRef(ref) {
   return { type: SET_SEARCH_BAR_REF, ref }
 }
 
-export function toggleTodo(index) {
-  return { type: TOGGLE_TODO, index }
+export function loadPageSpinner() {
+  return { type: LOAD_PAGE }
 }
 
 export function pickSuggestionEvent() {
@@ -98,6 +99,10 @@ export function setMobileNavExpanded(expanded) {
 
 export function setVisibilityFilter(filter) {
   return { type: SET_VISIBILITY_FILTER, filter }
+}
+
+export function updateCheapestBuyoutsOnItemPage(results) {
+  return { type: UPDATE_CHEAPEST_BO_ITEM_PAGE, results }
 }
 
 export function updateSearchResults(results) {
@@ -241,6 +246,32 @@ export function searchFromHomePage(overrideQuery=null) {
   };
 }
 
+export function getCheapestBuyout(query) {
+  return async function(dispatch, getState) {
+    dispatch(loadPageSpinner());
+    const {pageReducer} = getState();
+    const {currentRealm, currentFaction} = pageReducer;
+
+    const formattedRealm = currentRealm.replace(" ", "");
+
+    let q = normalizeParam(query),
+      r = normalizeParam(formattedRealm),
+      f = normalizeParam(currentFaction);
+
+    const search = await requestSearch(0, q, r, f, `&sortField=${SORT_FIELDS.BUYOUT}&sortFieldOrder=${SORT_ORDERS.ASCENDING}`, true);
+    const filteredItems = search.data.items;
+    const cheapestItems = filteredItems.filter(i => i.buyout !== 0).map((i) => {
+      const ratio = i.buyout / i.quantity;
+      return {
+        ...i,
+        ratio
+      }
+    }).sort((a, b) => a.ratio - b.ratio).slice(0, 5);
+    dispatch(updateCheapestBuyoutsOnItemPage(cheapestItems))
+  }
+
+}
+
 export function search(pageNum=0, overrideQuery=null, pushHistory=true)  {
   // We can invert control here by returning a function - the "thunk".
   // When this function is passed to `dispatch`, the thunk middleware will intercept it,
@@ -341,8 +372,8 @@ export function convertSortParamsToURLParams(sortParams) {
   return sortFieldParams.join('') + sortFieldOrderParams.join('');
 }
 
-const requestSearch = (p=0, q, r, f, sp) => {
-  return axios.get(CLASSIC_AH_API + '/api/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
+const requestSearch = (p=0, q, r, f, sp='', exact=false) => {
+  return axios.get(CLASSIC_AH_API + '/api/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp + '&exact=' + exact);
 };
 
 const requestMarketpriceData = (timespan=0, r, f, itemId) => {

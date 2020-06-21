@@ -147,6 +147,7 @@ h1 > span, h2 > span, h3 > span{
     background-image: url("https://d2b9gcya89vi12.cloudfront.net/ico/misc/socket-lg.png");
     background-size: 40px;
     display: inline-block;
+    text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black;
 }
 
 
