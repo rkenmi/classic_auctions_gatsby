@@ -1,6 +1,8 @@
 ![logo](/the_great_gatsby_trailer.jpg)
 # Classic Auctions - Gatsby
 An app that serves near real-time auctions with in-game Auctioneer data.
+
+Live: https://classic-ah.com
 ## Design
 This is roughly based on the early stage diagram below. Some things have changed since the inception (no pun intended ^^) but it is still mostly the same. The biggest change would be the separation of the API and front-end resources. The front-end is now served from a CDN via SSR (Server-side rendering). Another change is that a RDBMS is used for historical marketprice trends.
 
