@@ -328,10 +328,14 @@ export function setTimespanOnGraph(timespan, item) {
 export function getAllMarketpriceData(item, realm, faction)  {
   return async function(dispatch, getState) {
     dispatch(loadGraphSpinner());
+    const formattedRealm = realm.replace(" ", "");
+    let r = normalizeParam(formattedRealm),
+      f = normalizeParam(faction)
+    ;
     const marketprices = [
-      await requestMarketpriceData(0, realm, faction, item.id),
-      await requestMarketpriceData(1, realm, faction, item.id),
-      await requestMarketpriceData(2, realm, faction, item.id)
+      await requestMarketpriceData(0, r, f, item.id),
+      await requestMarketpriceData(1, r, f, item.id),
+      await requestMarketpriceData(2, r, f, item.id)
     ];
     dispatch(updateItemPageGraphData(marketprices.map(m => m.data)));
   }
