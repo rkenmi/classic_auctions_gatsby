@@ -1,5 +1,5 @@
 import {TIME_REMAINING} from '../helpers/constants';
-import {getColorCode} from '../helpers/searchHelpers';
+import {getColorCode, hideSuggestionItemsTooltip} from '../helpers/searchHelpers';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChartBar} from '@fortawesome/free-solid-svg-icons';
 import {Link} from 'gatsby';
@@ -38,7 +38,7 @@ export default class Item extends React.Component{
     return (
       <tr className={'align-middle'}>
         <td className={'align-middle'} style={{ height: '75px'}}>
-          <Link className={'auction-table-item'} style={{alignItems: 'center', color: getColorCode(metaItem.quality)}} to={'/item/' + id} target={'_blank'} data-wowhead={'item=' + id + '&domain=classic'}>
+          <Link onClick={(e) => {hideSuggestionItemsTooltip()}} className={'auction-table-item'} style={{alignItems: 'center', color: getColorCode(metaItem.quality)}} to={'/item/' + id} target={'_blank'} data-wowhead={'item=' + id + '&domain=classic'}>
             <span style={{backgroundImage: 'url("'+imgHref+'")'}}  className={'icon-wrapper'}>
               {quantityDOM}
               <img src={SOCKET} alt="suggestion icon" style={{height: 50, marginRight: 10}}/>
