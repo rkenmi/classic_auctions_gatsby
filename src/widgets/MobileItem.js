@@ -7,7 +7,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChartBar} from '@fortawesome/free-solid-svg-icons';
 import Button from 'react-bootstrap/Button';
 import {getQuantityDOM} from '../helpers/domHelpers';
-import {SOCKET} from '../helpers/endpoints';
+import {BIG_ICON_ITEM_URL, SOCKET} from '../helpers/endpoints';
 
 const React = require('react');
 
@@ -47,7 +47,7 @@ export default class Item extends React.Component{
 
   renderSlideOne() {
     const {metaItem, id, itemName, bid, buyout, seller, timeRemaining, quantity} = this.props.features;
-    const imgHref = 'https://render-classic-us.worldofwarcraft.com/icons/56/' + metaItem.icon + '.jpg';
+    const imgHref = BIG_ICON_ITEM_URL + metaItem.icon + '.jpg';
 
     const quantityDOM = getQuantityDOM(quantity);
 

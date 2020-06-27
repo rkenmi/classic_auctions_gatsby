@@ -14,6 +14,7 @@ import Container from 'react-bootstrap/Container';
 import Table from 'react-bootstrap/Table';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import {BIG_ICON_ITEM_URL, FOUR_O_FOUR} from '../helpers/endpoints';
 const React = require('react');
 
 const TIMESPAN_RADIOS = [
@@ -35,7 +36,7 @@ export default class AuctionTable extends React.Component {
     }
 
     const {metaItem, id} = item;
-    const imgHref = 'https://render-classic-us.worldofwarcraft.com/icons/56/' + metaItem.icon + '.jpg';
+    const imgHref = BIG_ICON_ITEM_URL + metaItem.icon + '.jpg';
 
     return (
       <Modal show={show} onHide={hide}>
@@ -123,7 +124,7 @@ export default class AuctionTable extends React.Component {
     } else if (items.length === 0) {
       return (
         <Container style={{flex: 1, flexDirection: 'column', display: 'flex', marginTop: 35, alignItems: 'center', color: '#fff'}}>
-          <img className={'img-responsive'} style={{borderRadius: 5, marginBottom: 30, width: 400}} alt={'Try a different query, will ya?'} src={'https://i.kym-cdn.com/photos/images/newsfeed/001/398/839/b4d.jpg'}/>
+          <img className={'img-responsive'} style={{borderRadius: 5, marginBottom: 30, width: 400}} alt={'Try a different query, will ya?'} src={FOUR_O_FOUR}/>
           <h4>
             No results! Try another query.
           </h4>

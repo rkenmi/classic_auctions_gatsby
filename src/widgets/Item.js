@@ -5,7 +5,7 @@ import {faChartBar} from '@fortawesome/free-solid-svg-icons';
 import {Link} from 'gatsby';
 import {WoWMoney} from './WoWMoney';
 import Button from 'react-bootstrap/Button';
-import {MISC_URL, SOCKET} from '../helpers/endpoints';
+import {BIG_ICON_ITEM_URL, MISC_URL, SOCKET} from '../helpers/endpoints';
 import {getQuantityDOM} from '../helpers/domHelpers';
 
 const React = require('react');
@@ -31,7 +31,7 @@ export default class Item extends React.Component{
 
   render() {
     const {metaItem, id, itemName, bid, buyout, seller, timeRemaining, quantity} = this.props.features;
-    const imgHref = 'https://render-classic-us.worldofwarcraft.com/icons/56/' + metaItem.icon + '.jpg';
+    const imgHref = BIG_ICON_ITEM_URL + metaItem.icon + '.jpg';
 
     const quantityDOM = getQuantityDOM(quantity);
 
