@@ -14,15 +14,6 @@ module.exports = {
   plugins: [
     `gatsby-plugin-offline`,
     {
-      resolve: `gatsby-plugin-google-adsense`,
-      options: {
-        publisherId: `ca-pub-5441241398898122`
-      },
-    },
-    {
-      resolve: `gatsby-plugin-preload-fonts`,
-    },
-    {
       resolve: 'gatsby-plugin-robots-txt',
       options: {
         host: 'https://classic-ah.com',
