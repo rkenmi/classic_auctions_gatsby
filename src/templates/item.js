@@ -1,18 +1,17 @@
-import AuctionHouse from '../pages/index';
 import {connect} from 'react-redux';
 import {
   getAllMarketpriceData, setPageContext, getCheapestBuyout
 } from '../actions/actions';
-import {SORT_FIELDS, SORT_ORDERS, TIMESPAN_DISPLAY} from '../helpers/constants';
-import {AuctionGraph} from '../widgets/graph/AuctionGraph';
+import {TIMESPAN_DISPLAY} from '../helpers/constants';
+import {AuctionGraph} from '../components/graph/AuctionGraph';
 import {getColorCode, hideSuggestionItemsTooltip} from '../helpers/searchHelpers';
-import {WoWMoney} from '../widgets/WoWMoney';
+import {WoWMoney} from '../components/WoWMoney';
 import {Desktop, Mobile, Tablet} from '../helpers/mediaTypes';
 import Layout from '../components/Layout';
 import Container from 'react-bootstrap/Container';
 import {getItemizedLink, getQuantityDOM, SPINNER_DOM} from '../helpers/domHelpers';
 import moment from 'moment';
-import {SOCKET} from '../helpers/endpoints';
+import {BIG_ICON_ITEM_URL, SOCKET} from '../helpers/endpoints';
 const React = require('react');
 
 class ItemTooltip extends React.Component {
@@ -93,12 +92,17 @@ class ItemTemplate extends React.Component {
     }
   }
 
-  renderAllGraphs(itemPagePrices, graphItem) {
+  renderAllGraphs(itemPagePrices, graphItem, isMobile=false) {
     const {currentRealm, currentFaction, graph: {loading}} = this.props;
     const flexDirection = 'column';
 
+    let graphCardStyle = {marginLeft: 30};
+    if (isMobile) {
+      graphCardStyle = {marginLeft: 0, marginTop: 30}
+    }
+
     const getGraphDOM = (content) => (
-      <div style={{margin: 30}}>
+      <div style={graphCardStyle}>
         <h4 style={{color: 'turquoise', marginBottom: 15}}>Graphs</h4>
         <div style={{display: 'flex', flexDirection, alignItems: 'space-evenly'}}>
           {content}
@@ -126,7 +130,7 @@ class ItemTemplate extends React.Component {
 
   _getViewElements() {
     const {currentRealm, currentFaction, pageLoading, graph: {cheapestItems}, pageContext: { item } } = this.props;
-    const imgHref = 'https://render-classic-us.worldofwarcraft.com/icons/56/' + item.icon + '.jpg';
+    const imgHref = BIG_ICON_ITEM_URL + item.icon + '.jpg';
     const itemTitle = getItemizedLink(item, imgHref);
 
     let noPriceData;
@@ -152,14 +156,10 @@ class ItemTemplate extends React.Component {
       dateDOM = <span style={{fontSize: 10, color: getColorCode('Misc')}}>{`Last scanned: ${dateStr}`}</span>;
     }
 
-    const fImgHref = (metaItem) => 'https://render-classic-us.worldofwarcraft.com/icons/56/' + metaItem.icon + '.jpg';
+    const fImgHref = (metaItem) => BIG_ICON_ITEM_URL + metaItem.icon + '.jpg';
 
     const style = {};
-    if (isMobile) {
-      style['margin'] = 30;
-    } else {
-      style['marginTop'] = 30;
-    }
+    style['marginTop'] = isMobile ? 30 : 60;
 
     return (
       <div style={style}>
@@ -187,62 +187,59 @@ class ItemTemplate extends React.Component {
     )
   }
 
-  _renderTitle(itemTitle) {
-    return (
-      <div style={{marginLeft: 30, display: 'flex'}}>
-        <h3>
-          {itemTitle}
-        </h3>
-      </div>
-    )
+  _renderTitle(itemTitle, small=false) {
+    const txt = small ? <h4>{itemTitle}</h4> : <h3>{itemTitle}</h3>;
+
+    return <div>{txt}</div>;
   }
 
   _renderDesktopView() {
     const {graph, pageContext: { item } } = this.props;
     const {item: graphItem, itemPagePrices} = graph;
-    const {itemTitle, cheapestItems, noPriceData} = this._getViewElements();
+    const {cheapestItems, noPriceData} = this._getViewElements();
 
     return (
-      <Container style={{color: '#fff', paddingTop: 80, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
-        {this._renderTitle(itemTitle)}
-        <div style={{display: 'flex', flex: 1, alignItems: 'space-evenly'}}>
-          <div style={{margin: 30, flex: 0.3}}>
-            <h4 style={{color: 'turquoise', marginBottom: 15}}>Stats</h4>
-            {<ItemTooltip item={item} tooltip={item.tooltip}/>}
-            <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
-            {this._renderCheapestItems(noPriceData, cheapestItems)}
-          </div>
-          <div style={{flex: 0.7}}>
-            {this.renderAllGraphs(itemPagePrices, item)}
-          </div>
-        </div>
-      </Container>
+      <div style={{color: '#fff', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
+          <Container style={{display: 'flex', flex: 1, alignItems: 'space-evenly'}}>
+            <div style={{flex: 0.3}}>
+              <h4 style={{color: 'turquoise', marginBottom: 15}}>Stats</h4>
+              {<ItemTooltip item={item} tooltip={item.tooltip}/>}
+              <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
+              {this._renderCheapestItems(noPriceData, cheapestItems)}
+            </div>
+            <div style={{flex: 0.7}}>
+              {this.renderAllGraphs(itemPagePrices, item)}
+            </div>
+          </Container>
+      </div>
     )
   }
 
   _renderMobileView() {
     const {graph, pageContext: { item } } = this.props;
     const {item: graphItem, itemPagePrices} = graph;
-    const {itemTitle, cheapestItems, noPriceData} = this._getViewElements();
+    const {cheapestItems, noPriceData} = this._getViewElements();
 
     return (
-      <Container style={{color: '#fff', paddingTop: 0, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
-        {this._renderTitle(itemTitle)}
-        <div style={{display: 'flex'}}>
-          <div style={{flex: 1, margin: 30}}>
-            <h4 style={{color: 'turquoise', marginBottom: 15}}>Stats</h4>
-            {<ItemTooltip item={item} tooltip={item.tooltip}/>}
-            <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
+      <div>
+        <Container style={{color: '#fff', paddingTop: 0, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
+          <div style={{display: 'flex'}}>
+            <div style={{flex: 1}}>
+              <h4 style={{color: 'turquoise', marginBottom: 15}}>Stats</h4>
+              {<ItemTooltip item={item} tooltip={item.tooltip}/>}
+              <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
+            </div>
           </div>
-        </div>
-        {this._renderCheapestItems(noPriceData, cheapestItems, true)}
-        {this.renderAllGraphs(itemPagePrices, item)}
-      </Container>
+          {this._renderCheapestItems(noPriceData, cheapestItems, true)}
+          {this.renderAllGraphs(itemPagePrices, item, true)}
+        </Container>
+      </div>
     )
   }
 
   render() {
     const {location, currentRealm, currentFaction, realms, pageContext: { item } } = this.props;
+    const {itemTitle} = this._getViewElements();
 
     let subtitle = `Item - ${item.name}`;
     if (currentRealm && currentFaction) {
@@ -250,19 +247,16 @@ class ItemTemplate extends React.Component {
     }
 
     return (
-      <Layout metaInfo={{subtitle, description: `Classic WoW item data for ${item.name}`}}>
-        <AuctionHouse
-          noLayout location={location}>
-          <Desktop>
-            {this._renderDesktopView()}
-          </Desktop>
-          <Mobile>
-            {this._renderMobileView()}
-          </Mobile>
-          <Tablet>
-            {this._renderMobileView()}
-          </Tablet>
-        </AuctionHouse>
+      <Layout title={this._renderTitle(itemTitle)} metaInfo={{subtitle, description: `Classic WoW item data for ${item.name}`}}>
+        <Desktop>
+          {this._renderDesktopView()}
+        </Desktop>
+        <Mobile>
+          {this._renderMobileView()}
+        </Mobile>
+        <Tablet>
+          {this._renderMobileView()}
+        </Tablet>
       </Layout>
     )
   }

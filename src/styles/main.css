@@ -205,11 +205,10 @@ h1 > span, h2 > span, h3 > span{
     font-family: 'FontAwesome';
 }
 
-.dropdown-submenu>.dropdown-menu {
+.dropdown-submenu .dropdown-menu {
     top: 0;
     left: 100%;
-    margin-top: 0px;
-    margin-left: 0px;
+    margin-top: -1px;
 }
 
 .dropdown-realm.show.dropright > .btn-realm:focus, .dropdown-realm.focus, .dropdown-realm:focus {

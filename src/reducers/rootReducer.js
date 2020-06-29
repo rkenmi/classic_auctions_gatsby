@@ -56,6 +56,9 @@ function pageReducer(state = {count: 0, realms: REALMS,suggestions: [], items: [
       const {items, page, queryMs, count} = action.results;
       return {
         ...state,
+        sourceQuery: action.sourceQuery,
+        sourceRealm: action.sourceRealm,
+        sourceFaction: action.sourceFaction,
         items,
         count,
         page,

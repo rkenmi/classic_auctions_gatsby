@@ -105,8 +105,8 @@ export function updateCheapestBuyoutsOnItemPage(results) {
   return { type: UPDATE_CHEAPEST_BO_ITEM_PAGE, results }
 }
 
-export function updateSearchResults(results) {
-  return { type: UPDATE_SEARCH_RESULTS, results }
+export function updateSearchResults(sourceQuery, sourceRealm, sourceFaction, results) {
+  return { type: UPDATE_SEARCH_RESULTS, sourceQuery, sourceRealm, sourceFaction, results }
 }
 
 export function updateItemPageGraphData(data) {
@@ -241,8 +241,7 @@ export function searchFromHomePage(overrideQuery=null) {
     }
 
     const formattedRealm = currentRealm.replace(" ", "");
-    await navigate('/?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction);
-    // dispatch(push('/search?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction));
+    await navigate('/search?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction);
   };
 }
 
@@ -282,6 +281,7 @@ export function search(pageNum=0, overrideQuery=null, pushHistory=true)  {
     const {currentRealm, currentFaction, sort} = pageReducer;
     const query = overrideQuery === null ? pageReducer.query : overrideQuery;
 
+    hideSuggestionItemsTooltip();
     if (!searchIsValid(dispatch, query, currentRealm, currentFaction)) {
       return;
     }
@@ -296,12 +296,12 @@ export function search(pageNum=0, overrideQuery=null, pushHistory=true)  {
 
     if (pushHistory) {
       // dispatch(push('/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp))
-      await navigate('/?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
+      await navigate('/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
     }
     dispatch(loadSpinner());
     dispatch(setMobileNavExpanded(false));
     const search = await requestSearch(p, q, r, f, sp);
-    dispatch(updateSearchResults(search.data))
+    dispatch(updateSearchResults(q, r, f, search.data))
   };
 }
 

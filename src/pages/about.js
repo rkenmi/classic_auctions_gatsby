@@ -1,40 +1,26 @@
 import {Container} from 'react-bootstrap';
-import {Logo} from '../helpers/domHelpers';
 import Layout from '../components/Layout';
+import {TextBlock} from '../components/TextBlock';
 const React = require('react');
 
 class About extends React.Component {
   render() {
     return (
-      <Layout metaInfo={{subtitle: 'About', description: 'About Classic AH'}}>
-        <Container style={{color: '#fff', paddingTop: 80, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
-          <div style={{display: 'flex', justifyContent: 'center'}}>
-            <a href={'https://classic-ah.com'}>
-              <Logo/>
-            </a>
-          </div>
-          <div style={{display: 'flex', justifyContent: 'center', margin: 10}}>
-            <h3>
-              <span>{'About'}</span>
-            </h3>
-          </div>
-          <div style={{margin: 30, flex: 1}}>
-            <h4 style={{color: 'turquoise'}}>Goal</h4>
-            Classic AH is a search engine for auction house data on WoW Classic. The goal of Classic AH is to provide
-            near real-time auction house data from the convenience of your desktop, tablet, or mobile phone.
+      <Layout title={'About'} metaInfo={{subtitle: 'About', description: 'About Classic AH'}}>
+        <Container style={{color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
+          <TextBlock title={'Goal'}>
+            <div>
+              Classic AH is a search engine for auction house data on WoW Classic. The goal of Classic AH is to provide
+              near real-time auction house data from the convenience of your desktop, tablet, or mobile phone.
 
-            We are currently only launched for US-West realms. If there is enough interest in this application, then we'll
-            consider expanding to US-East, Europe and Oceanic!
-          </div>
-          <div style={{margin: 30, flex: 1}}>
-            <h4 style={{color: 'turquoise'}}>Graph Trends</h4>
-            The way the graph data is calculated is very basic. A point on the graph simply shows the timestamp of when the data was scanned,
-            the <u>minimum buyout price</u> of that item, and the quantity of the item.
-          </div>
-          <div style={{margin: 30, flex: 1}}>
-            <h4 style={{color: 'turquoise'}}>Donations</h4>
-            If you would like to help cover the hosting costs, you can donate here. Otherwise, no biggie!
-
+              We are currently only launched for US-West realms. If there is enough interest in this application, then we'll
+              consider expanding to US-East, Europe and Oceanic!
+            </div>
+          </TextBlock>
+          <TextBlock title={'Donations'}>
+            <div>
+              If you would like to help cover the hosting costs, it would be much appreciated!
+            </div>
             <div style={{display: 'flex', justifyContent: 'center', marginTop: 30}}>
               <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
                 <input type="hidden" name="cmd" value="_donations" />
@@ -45,12 +31,12 @@ class About extends React.Component {
                 <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
               </form>
             </div>
-          </div>
-
-          <div style={{margin: 30, flex: 1}}>
-            <h4 style={{color: 'turquoise'}}>Issues / Feature Requests</h4>
-            See a bug on the page? Or maybe you want a new feature to be added? Please email your concerns, inquiries and requests to webm.classic.ah@gmail.com.
-          </div>
+          </TextBlock>
+          <TextBlock title={'Issues and Feature Requests'}>
+            <div>
+              See a bug on the page? Or maybe you want a new feature to be added? Please email your concerns, inquiries and requests to webm.classic.ah@gmail.com.
+            </div>
+          </TextBlock>
         </Container>
       </Layout>
     )

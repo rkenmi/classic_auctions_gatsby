@@ -1,10 +1,10 @@
-import Item from './Item';
-import MobileItem from './MobileItem';
+import Item from '../components/Item';
+import MobileItem from '../components/MobileItem';
 import {Desktop, Mobile, Tablet} from '../helpers/mediaTypes';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowDown, faArrowUp} from '@fortawesome/free-solid-svg-icons';
 import {SORT_FIELDS, SORT_FIELDS_DISPLAY_NAMES, SORT_ORDERS} from '../helpers/constants';
-import {AuctionGraph} from './graph/AuctionGraph';
+import {AuctionGraph} from '../components/graph/AuctionGraph';
 import {getItemizedLink, SPINNER_DOM} from '../helpers/domHelpers';
 import Modal from 'react-bootstrap/Modal';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';

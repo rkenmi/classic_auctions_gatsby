@@ -2,16 +2,11 @@ import {connect} from 'react-redux';
 import {Link} from 'gatsby';
 import moment from 'moment';
 import Container from 'react-bootstrap/Container';
-import {useMediaQuery} from 'react-responsive';
 
 const React = require('react');
 
 const PageLinks = (props) => {
-  const isDesktopOrLaptop = useMediaQuery({
-    query: '(min-device-width: 1224px)'
-  });
-
-  const footerWidth = isDesktopOrLaptop ? '20%' : '75%';
+  const footerWidth = 300;
 
   return (
     <div id={'ah-footer'} style={{
@@ -25,6 +20,7 @@ const PageLinks = (props) => {
       <Link to={'/'}>Home</Link>
       <Link to={'/about'}>About</Link>
       <Link to={'/privacy'}>Privacy Policy</Link>
+      <Link to={'#'}>Items List</Link>
     </div>
   )
 };
@@ -38,12 +34,12 @@ class Footer extends React.Component {
     const {items, queryMs, location} = this.props;
 
     let dateDom, latencyDom;
-    if (items && items.length > 0 && location && location.pathname === '/') {
+    if (items && items.length > 0 && location && location.pathname === '/search') {
       const dateStr = moment(new Date(items[0].timestamp)).fromNow();
       dateDom = <div style={{color: '#fff', fontSize: 10}}>Last data refresh: {dateStr}</div>;
     }
 
-    if (queryMs && location && location.pathname === '/') {
+    if (queryMs && location && location.pathname === '/search') {
       latencyDom = <div style={{color: '#fff', fontSize: 10}}>Query response time: {queryMs} ms</div>;
     }
 
