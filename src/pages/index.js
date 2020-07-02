@@ -17,8 +17,8 @@ import Layout from '../components/Layout';
 import Container from 'react-bootstrap/Container';
 import Modal from 'react-bootstrap/Modal';
 import Carousel from 'react-bootstrap/Carousel';
-import AH_banner1 from '../images/AH-mx.png';
-import AH_banner2 from '../images/AH3-mx.png';
+import AH_banner1 from '../images/AH-mx.webp';
+import AH_banner2 from '../images/AH3-mx.webp';
 import {TextBlock} from '../components/TextBlock';
 const React = require('react');
 
