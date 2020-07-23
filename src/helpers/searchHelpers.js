@@ -1,7 +1,7 @@
 const qs = require('qs');
 
 export const normalizeParam = (s) => {
-  return s.replace(/[^a-zA-Z\s:\\'"]/gi,'');
+  return s.replace(/[^-^a-zA-Z\s:\\'"]/gi,'');
 };
 
 export const normalizeNumber = (n) => {

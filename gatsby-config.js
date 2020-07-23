@@ -24,6 +24,12 @@ module.exports = {
     `gatsby-plugin-react-helmet`,
     `gatsby-plugin-sitemap`,
     {
+      resolve: `gatsby-plugin-google-adsense`,
+      options: {
+        publisherId: `ca-pub-5441241398898122`
+      },
+    },
+    {
       resolve: `gatsby-plugin-s3`,
       options: {
         bucketName: "classic-ah.com",

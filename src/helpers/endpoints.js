@@ -6,3 +6,7 @@ export const BIG_ICON_ITEM_URL = 'https://render-classic-us.worldofwarcraft.com/
 
 // Images
 export const SOCKET = MISC_URL + 'socket-lg.png';
+
+export const getItemPageLink = (id, currentRealm, currentFaction) => {
+  return `/item/${id}/?realm=${currentRealm}&faction=${currentFaction}`;
+};

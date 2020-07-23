@@ -5,7 +5,7 @@
 import {hideSuggestionItemsTooltip, normalizeNumber, normalizeParam, objectFlip} from '../helpers/searchHelpers';
 import {SORT_FIELDS, SORT_ORDERS} from '../helpers/constants';
 import {navigate} from 'gatsby';
-import {CLASSIC_AH_API} from '../helpers/endpoints';
+import {CLASSIC_AH_API, getItemPageLink} from '../helpers/endpoints';
 const axios = require('axios').default;
 
 export const SEARCH_STATE = 'SEARCH_STATE';
@@ -194,13 +194,15 @@ export function searchOnSetRealmAndFaction(currentRealm, currentFaction, overrid
     return Promise.all([
       dispatch(setCurrentRealm(currentRealm)),
       dispatch(setCurrentFaction(currentFaction))
-    ]).then(() => {
+    ]).then(async () => {
       const {pageReducer} = getState();
       const {itemPageContext, hasSearched, query: q, currentRealm: r, currentFaction: f} = pageReducer;
       const query = overrideQuery ? overrideQuery : q;
       // All done
       if (itemPageContext && (q === '' || hasSearched)) {
-        dispatch(search(0, itemPageContext.name, false));
+        // dispatch(search(0, itemPageContext.name, false));
+        // await navigate(`/item/${itemPageContext.id}/?realm=${r}&faction=${f}`);
+        await navigate(getItemPageLink(itemPageContext.id, r, f));
         return;
       }
 
@@ -241,7 +243,7 @@ export function searchFromHomePage(overrideQuery=null) {
     }
 
     const formattedRealm = currentRealm.replace(" ", "");
-    await navigate('/search?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction);
+    await navigate('/search/?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction);
   };
 }
 
@@ -296,7 +298,7 @@ export function search(pageNum=0, overrideQuery=null, pushHistory=true)  {
 
     if (pushHistory) {
       // dispatch(push('/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp))
-      await navigate('/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
+      await navigate('/search/?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
     }
     dispatch(loadSpinner());
     dispatch(setMobileNavExpanded(false));

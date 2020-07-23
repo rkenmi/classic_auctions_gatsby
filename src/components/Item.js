@@ -5,7 +5,7 @@ import {faChartBar} from '@fortawesome/free-solid-svg-icons';
 import {Link} from 'gatsby';
 import {WoWMoney} from './WoWMoney';
 import Button from 'react-bootstrap/Button';
-import {BIG_ICON_ITEM_URL, SOCKET} from '../helpers/endpoints';
+import {BIG_ICON_ITEM_URL, getItemPageLink, SOCKET} from '../helpers/endpoints';
 import {getQuantityDOM} from '../helpers/domHelpers';
 
 const React = require('react');
@@ -30,6 +30,7 @@ export default class Item extends React.Component {
   };
 
   render() {
+    const {currentRealm, currentFaction} = this.props;
     const {metaItem, id, itemName, bid, buyout, seller, timeRemaining, quantity} = this.props.features;
     const imgHref = BIG_ICON_ITEM_URL + metaItem.icon + '.jpg';
 
@@ -38,7 +39,9 @@ export default class Item extends React.Component {
     return (
       <tr className={'align-middle'}>
         <td className={'align-middle'} style={{ height: '75px'}}>
-          <Link onClick={(e) => {hideSuggestionItemsTooltip()}} className={'auction-table-item'} style={{alignItems: 'center', color: getColorCode(metaItem.quality)}} to={'/item/' + id} target={'_blank'} data-wowhead={'item=' + id + '&domain=classic'}>
+          <Link onClick={(e) => {hideSuggestionItemsTooltip()}} className={'auction-table-item'}
+                style={{alignItems: 'center', color: getColorCode(metaItem.quality)}}
+                to={getItemPageLink(id, currentRealm, currentFaction)} target={'_blank'} data-wowhead={'item=' + id + '&domain=classic'}>
             <span style={{backgroundImage: 'url("'+imgHref+'")'}}  className={'icon-wrapper'}>
               {quantityDOM}
               <img src={SOCKET} alt="suggestion icon" style={{height: 50, marginRight: 10}}/>

@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import {
-  getAllMarketpriceData, setPageContext, getCheapestBuyout
+  getAllMarketpriceData, setPageContext, getCheapestBuyout, setCurrentFaction, setCurrentRealm
 } from '../actions/actions';
 import {TIMESPAN_DISPLAY} from '../helpers/constants';
 import {AuctionGraph} from '../components/graph/AuctionGraph';
@@ -13,6 +13,7 @@ import {getItemizedLink, getQuantityDOM, SPINNER_DOM} from '../helpers/domHelper
 import moment from 'moment';
 import {BIG_ICON_ITEM_URL, SOCKET} from '../helpers/endpoints';
 const React = require('react');
+const qs = require('qs');
 
 class ItemTooltip extends React.Component {
   render() {
@@ -73,11 +74,23 @@ class ItemTemplate extends React.Component {
   componentDidMount() {
     const {currentRealm, currentFaction, pageContext: {item}} = this.props;
     this.props.setPageContext(item);
+
+    const searchParams = this.props.location.search;
+    const realmParam = qs.parse(searchParams, { ignoreQueryPrefix: true }).realm;
+    const factionParam = qs.parse(searchParams, { ignoreQueryPrefix: true }).faction;
+
     if (currentFaction && currentRealm) {
-      this.props.getCheapestItems(this.props.pageContext.item.name);
+      this.props.getCheapestItems(item.name);
       this.props.loadAllGraphs(item, currentRealm, currentFaction);
+    } else if (realmParam && factionParam) {
+      this.props.setCurrentRealm(realmParam);
+      this.props.setCurrentFaction(factionParam);
+      this.props.getCheapestItems(item.name);
+      this.props.loadAllGraphs(item, realmParam, factionParam);
     }
+
     hideSuggestionItemsTooltip();
+
   }
 
   componentWillUnmount() {
@@ -85,7 +98,7 @@ class ItemTemplate extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const {currentRealm, currentFaction, query, items, pageContext: {item}} = this.props;
+    const {currentRealm, currentFaction, pageContext: {item}} = this.props;
     if (prevProps.currentRealm !== currentRealm || prevProps.currentFaction !== currentFaction) {
       this.props.getCheapestItems(this.props.pageContext.item.name);
       this.props.loadAllGraphs(item, currentRealm, currentFaction);
@@ -129,7 +142,7 @@ class ItemTemplate extends React.Component {
   }
 
   _getViewElements() {
-    const {currentRealm, currentFaction, pageLoading, graph: {cheapestItems}, pageContext: { item } } = this.props;
+    const {currentRealm, currentFaction, graph: {cheapestItems}, pageContext: { item } } = this.props;
     const imgHref = BIG_ICON_ITEM_URL + item.icon + '.jpg';
     const itemTitle = getItemizedLink(item, imgHref);
 
@@ -195,7 +208,7 @@ class ItemTemplate extends React.Component {
 
   _renderDesktopView() {
     const {graph, pageContext: { item } } = this.props;
-    const {item: graphItem, itemPagePrices} = graph;
+    const {itemPagePrices} = graph;
     const {cheapestItems, noPriceData} = this._getViewElements();
 
     return (
@@ -217,7 +230,7 @@ class ItemTemplate extends React.Component {
 
   _renderMobileView() {
     const {graph, pageContext: { item } } = this.props;
-    const {item: graphItem, itemPagePrices} = graph;
+    const {itemPagePrices} = graph;
     const {cheapestItems, noPriceData} = this._getViewElements();
 
     return (
@@ -238,7 +251,7 @@ class ItemTemplate extends React.Component {
   }
 
   render() {
-    const {location, currentRealm, currentFaction, realms, pageContext: { item } } = this.props;
+    const {currentRealm, currentFaction, pageContext: { item } } = this.props;
     const {itemTitle} = this._getViewElements();
 
     let subtitle = `Item - ${item.name}`;
@@ -286,6 +299,12 @@ function mapDispatchToProps(dispatch) {
     },
     setPageContext: (item) => {
       dispatch(setPageContext(item));
+    },
+    setCurrentRealm: (realm) => {
+      dispatch(setCurrentRealm(realm));
+    },
+    setCurrentFaction: (faction) => {
+      dispatch(setCurrentFaction(faction));
     },
   }
 }

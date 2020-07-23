@@ -7,7 +7,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChartBar} from '@fortawesome/free-solid-svg-icons';
 import Button from 'react-bootstrap/Button';
 import {getQuantityDOM} from '../helpers/domHelpers';
-import {BIG_ICON_ITEM_URL, SOCKET} from '../helpers/endpoints';
+import {BIG_ICON_ITEM_URL, getItemPageLink, SOCKET} from '../helpers/endpoints';
 
 const React = require('react');
 
@@ -46,6 +46,7 @@ export default class Item extends React.Component{
   };
 
   renderSlideOne() {
+    const {currentRealm, currentFaction} = this.props;
     const {metaItem, id, itemName, bid, buyout, seller, timeRemaining, quantity} = this.props.features;
     const imgHref = BIG_ICON_ITEM_URL + metaItem.icon + '.jpg';
 
@@ -54,7 +55,8 @@ export default class Item extends React.Component{
     return (
       <div style={{padding: 10}}>
               <span style={{display: 'flex', flex: 1}}>
-                <Link style={{color: getColorCode(metaItem.quality)}} to={'/item/' + id}>
+                <Link style={{color: getColorCode(metaItem.quality)}}
+                      to={getItemPageLink(id, currentRealm, currentFaction)}>
                   <span style={{backgroundImage: 'url("'+imgHref+'")'}}  className={'icon-wrapper'}>
                     {quantityDOM}
                     <img src={SOCKET} alt="suggestion icon" style={{height: 50, marginRight: 10}}/>

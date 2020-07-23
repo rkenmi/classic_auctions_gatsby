@@ -74,15 +74,21 @@ export default class AuctionTable extends React.Component {
     )
   }
 
-  getDesktopItems(items) {
+  getDesktopItems(items, currentRealm, currentFaction) {
     return items.map(features =>
-      <Item key={items.indexOf(features)} index={items.indexOf(features)} features={features} onClickGraph={() => this.props.onClickGraph(features)}/>
+      <Item key={items.indexOf(features)} index={items.indexOf(features)}
+            currentRealm={currentRealm} currentFaction={currentFaction}
+            features={features} onClickGraph={() => this.props.onClickGraph(features)}
+      />
     );
   }
 
-  getMobileItems(items) {
+  getMobileItems(items, currentRealm, currentFaction) {
     return items.map(features =>
-      <MobileItem key={items.indexOf(features)} index={items.indexOf(features)} features={features} onClickGraph={() => this.props.onClickGraph(features)}/>
+      <MobileItem key={items.indexOf(features)} index={items.indexOf(features)}
+                  currentRealm={currentRealm} currentFaction={currentFaction}
+                  features={features} onClickGraph={() => this.props.onClickGraph(features)}
+      />
     );
   }
 
@@ -109,7 +115,7 @@ export default class AuctionTable extends React.Component {
   }
 
   render() {
-    let {items} = this.props;
+    let {items, currentRealm, currentFaction} = this.props;
 
     if (!items || this.props.loading) {
       return SPINNER_DOM;
@@ -124,10 +130,7 @@ export default class AuctionTable extends React.Component {
     } else if (items.length === 0) {
       return (
         <Container style={{flex: 1, flexDirection: 'column', display: 'flex', marginTop: 35, alignItems: 'center', color: '#fff'}}>
-          <img className={'img-responsive'} style={{borderRadius: 5, marginBottom: 30, width: 400}} alt={'Try a different query, will ya?'} src={FOUR_O_FOUR}/>
-          <h4>
-            No results! Try another query.
-          </h4>
+          No results! Try another query.
         </Container>
       )
     }
@@ -174,7 +177,7 @@ export default class AuctionTable extends React.Component {
               <th style={{width: '20%'}}>Seller</th>
               <th style={{width: '10%'}}>Time Left</th>
             </tr>
-            {this.getDesktopItems(items.slice(0, 15))}
+            {this.getDesktopItems(items.slice(0, 15), currentRealm, currentFaction)}
             </tbody>
           </Table>
         </Desktop>
@@ -182,7 +185,7 @@ export default class AuctionTable extends React.Component {
           <div style={{color: '#fff', marginBottom: 10}}>
             {this.renderGraphModal()}
             <div style={{backgroundColor: '#343a40'}}>
-              {this.getMobileItems(items.slice(0, 15))}
+              {this.getMobileItems(items.slice(0, 15), currentRealm, currentFaction)}
             </div>
           </div>
         </Mobile>
@@ -191,7 +194,7 @@ export default class AuctionTable extends React.Component {
             <div style={{height: 25}}/>
             {this.renderGraphModal()}
             <div style={{backgroundColor: '#343a40'}}>
-              {this.getMobileItems(items.slice(0, 15))}
+              {this.getMobileItems(items.slice(0, 15), currentRealm, currentFaction)}
             </div>
           </div>
         </Tablet>

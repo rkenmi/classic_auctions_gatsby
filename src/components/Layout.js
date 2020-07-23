@@ -6,6 +6,7 @@ import DesktopNavbar from '../widgets/DesktopNavbar';
 import MobileNavbar from '../widgets/MobileNavbar';
 import Jumbotron from 'react-bootstrap/Jumbotron';
 import Container from 'react-bootstrap/Container';
+import {hideSuggestionItemsTooltip} from '../helpers/searchHelpers';
 
 function renderTitle(title, small=false) {
   if (!title) {
@@ -29,6 +30,7 @@ export default function Layout({ metaInfo, title, children, location }) {
 
   useEffect(() => {
     setShow(true, []);
+    hideSuggestionItemsTooltip();
   });
 
   if (!show) {

@@ -38,7 +38,7 @@ function visibilityReducer(state = SHOW_ALL, action) {
   }
 }
 
-function pageReducer(state = {count: 0, realms: REALMS,suggestions: [], items: [], hasSearched: false, query: '', loading: false,
+function pageReducer(state = {count: 0, realms: REALMS.US_WEST, suggestions: [], items: [], hasSearched: false, query: '', loading: false,
   sort: {}, pageLoading: false, mobileNavExpanded: false, graph: {item: null, prices: [], cheapestItems: [], timespan: 0}}, action)
 {
   switch (action.type) {

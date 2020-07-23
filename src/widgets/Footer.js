@@ -20,7 +20,7 @@ const PageLinks = (props) => {
       <Link to={'/'}>Home</Link>
       <Link to={'/about'}>About</Link>
       <Link to={'/privacy'}>Privacy Policy</Link>
-      <Link to={'#'}>Items List</Link>
+      <Link to={'/items'}>Items List</Link>
     </div>
   )
 };

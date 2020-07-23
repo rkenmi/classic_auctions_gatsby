@@ -31,20 +31,22 @@ export const TIMESPAN_DISPLAY = [
   'Last Month',
 ];
 
-export const REALMS = [
-  "Bigglesworth",
-  "Anathema",
-  "Arcanite Reaper",
-  "Azuresong",
-  "Kurinnaxx",
-  "Old Blanchy",
-  "Smolderweb",
-  "Thunderfury",
-  "Rattlegore",
-  "Myzrael",
-  "Atiesh",
-  "Whitemane",
-  "Grobbulus",
-  "Fairbanks",
-  "Blaumeux"
-];
+export const REALMS = {
+  US_WEST: [
+      "Bigglesworth",
+      "Anathema",
+      "Arcanite Reaper",
+      "Azuresong",
+      "Kurinnaxx",
+      "Old Blanchy",
+      "Smolderweb",
+      "Thunderfury",
+      "Rattlegore",
+      "Myzrael",
+      "Atiesh",
+      "Whitemane",
+      "Grobbulus",
+      "Fairbanks",
+      "Blaumeux"
+  ]
+};

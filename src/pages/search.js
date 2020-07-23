@@ -168,6 +168,8 @@ class AuctionHouse extends React.Component{
               onCloseModal={this.props.hideGraph}
               sortFilter={this.props.sort}
               searchOnSort={this.props.searchOnSort}
+              currentRealm={currentRealm}
+              currentFaction={currentFaction}
             />
           </Container>
           <AuctionPagination count={count} items={items} loading={loading} page={page} getPageHref={this.getPageHref.bind(this)}/>

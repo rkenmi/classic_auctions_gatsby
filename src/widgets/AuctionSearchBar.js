@@ -38,7 +38,8 @@ class AuctionSearchBar extends React.Component {
                     className={'search-anchor'}
                     onClick={(e) => {
                       e.preventDefault();
-                      e.currentTarget.dispatchEvent(new MouseEvent("mouseout"))
+                      e.currentTarget.dispatchEvent(new MouseEvent("mouseout"));
+                      hideSuggestionItemsTooltip()
                     }}
                     target={'_blank'}
                     style={{
@@ -95,8 +96,8 @@ class AuctionSearchBar extends React.Component {
   };
 
   onKeyDown = (e) => {
-    hideSuggestionItemsTooltip();
     this.props.onKeyDown(e);
+    hideSuggestionItemsTooltip();
   };
 
   setTypeaheadRef = (ref) => {
