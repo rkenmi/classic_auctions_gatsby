@@ -45,7 +45,7 @@ class AuctionHouse extends React.Component{
     const {query, currentFaction, currentRealm, sort} = this.props;
     const q = normalizeParam(query), f = normalizeParam(currentFaction), r = normalizeParam(currentRealm).replace(" ", "");
     const sp = convertSortParamsToURLParams(sort);
-    return '/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp;
+    return '/search/?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp;
   };
 
   clearError = () => {
