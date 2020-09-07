@@ -130,9 +130,9 @@ class HomePage extends React.Component{
               </div>
               <div>
                 Try some sample queries:
-
-                https://classic-ah.com/search/?q=wool&p=0&realm=OldBlanchy&faction=Horde
-                https://classic-ah.com/search/?q=righteous&p=0&realm=Anathema&faction=Alliance
+                <br/><br/>
+                <a href="https://classic-ah.com/search/?q=wool&p=0&realm=OldBlanchy&faction=Horde">Wool (Old Blanchy - H)</a>
+                <a href="https://classic-ah.com/search/?q=righteous&p=0&realm=Anathema&faction=Alliance">Righteous Orb (Anathema - A)</a>
               </div>
             </TextBlock>
             <hr/>
