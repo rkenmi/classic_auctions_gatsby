@@ -21,6 +21,9 @@ import AH_banner1 from '../images/AH-mx.webp';
 import AH_banner2 from '../images/AH3-mx.webp';
 import {TextBlock} from '../components/TextBlock';
 const React = require('react');
+let Parser = require('rss-parser');
+let parser = new Parser();
+const CORS_PROXY = "https://cors-anywhere.herokuapp.com/"
 
 class HomePage extends React.Component{
   constructor(props) {
@@ -36,6 +39,13 @@ class HomePage extends React.Component{
   }
 
   componentDidMount() {
+    let self = this;
+    parser.parseURL(CORS_PROXY + 'https://classic.wowhead.com/news/rss/classic', function(err, feed) {
+      if (err) throw err;
+      self.setState({
+        feed
+      });
+    });
     this.setState({
       loadPage: true
     });
@@ -78,6 +88,18 @@ class HomePage extends React.Component{
       return SPINNER_DOM;
     }
 
+    let feedBlock = null;
+    if (this.state.feed) {
+      feedBlock =
+        <TextBlock title={'News'}>
+          {this.state.feed.items.map(item =>
+              <TextBlock titleColor={'lightblue'} title={item.title} sm>
+                <div dangerouslySetInnerHTML={{__html: item.content}}/>
+              </TextBlock>
+          )}
+        </TextBlock>
+    }
+
     let subtitle = 'Home', description = null;
     if (currentRealm && currentFaction) {
       subtitle = `Search - ${currentRealm} - ${currentFaction} | ${query}`;
@@ -94,14 +116,22 @@ class HomePage extends React.Component{
             </Modal.Header>
           </Modal>
           <Container style={{marginTop: 30, color: '#fff'}}>
-            <TextBlock title={'Welcome!'}>
+            <TextBlock title={'Announcement'}>
               <div>
-                Classic AH is a search engine for fetching recent live auction house data on WoW Classic.
-              </div>
-              <div>
-                This app is currently in <b>BETA</b> and only supports US West realms!
+                I will be temporarily shutting off the periodic refresh of auction house data until a good cost-effective solution is found.
               </div>
             </TextBlock>
+            <hr/>
+            <TextBlock title={'Welcome!'}>
+              <div>
+                Classic AH is a search engine for fetching recent live auction house data on WoW Classic. It is currently supported for desktop and mobile browsers.
+              </div>
+              <div>
+                Note: Classic AH is in <b>Beta</b> and will only support US West realms for the time being.
+              </div>
+            </TextBlock>
+            <hr/>
+            {feedBlock}
           </Container>
         </div>
       </Layout>
