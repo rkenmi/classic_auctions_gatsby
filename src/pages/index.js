@@ -125,9 +125,14 @@ class HomePage extends React.Component{
             <TextBlock title={'Welcome!'}>
               <div>
                 Classic AH is a search engine for fetching recent live auction house data on WoW Classic. It is currently supported for desktop and mobile browsers.
+                <br/>
+                Note: Classic AH is in <b>Beta</b> and will only support US West realms for the time being.
               </div>
               <div>
-                Note: Classic AH is in <b>Beta</b> and will only support US West realms for the time being.
+                Try some sample queries:
+
+                https://classic-ah.com/search/?q=wool&p=0&realm=OldBlanchy&faction=Horde
+                https://classic-ah.com/search/?q=righteous&p=0&realm=Anathema&faction=Alliance
               </div>
             </TextBlock>
             <hr/>
