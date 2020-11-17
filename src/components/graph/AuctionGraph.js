@@ -48,9 +48,9 @@ export class AuctionGraph extends PureComponent {
                    moment().valueOf(),
                  ]}
                  tickFormatter={formatTick}/>
-          <YAxis dataKey="price" width={75} tick={<WowCurrencyTick timespan={timespan}/>} />
+          <YAxis dataKey="buyout" width={75} tick={<WowCurrencyTick timespan={timespan}/>} />
           <Tooltip content={<CustomTooltip item={item}/>} />
-          <Area type="monotone" dataKey="price" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
+          <Area type="monotone" dataKey="buyout" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
         </ComposedChart>
       </ResponsiveContainer>
     )

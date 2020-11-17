@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import {
-  getAllMarketpriceData, setPageContext, getCheapestBuyout, setCurrentFaction, setCurrentRealm
+  getAllMarketpriceData, setPageContext, getCheapestBuyout, setCurrentFaction, setCurrentRealm, getCheapestNHData
 } from '../actions/actions';
 import {TIMESPAN_DISPLAY} from '../helpers/constants';
 import {AuctionGraph} from '../components/graph/AuctionGraph';
@@ -80,13 +80,15 @@ class ItemTemplate extends React.Component {
     const factionParam = qs.parse(searchParams, { ignoreQueryPrefix: true }).faction;
 
     if (currentFaction && currentRealm) {
-      this.props.getCheapestItems(item.name);
-      this.props.loadAllGraphs(item, currentRealm, currentFaction);
+      // this.props.getCheapestItems(item.name);
+      this.props.getCheapestItems(item);
+      // this.props.loadAllGraphs(item, currentRealm, currentFaction);
     } else if (realmParam && factionParam) {
       this.props.setCurrentRealm(realmParam);
       this.props.setCurrentFaction(factionParam);
-      this.props.getCheapestItems(item.name);
-      this.props.loadAllGraphs(item, realmParam, factionParam);
+      // this.props.getCheapestItems(item.name);
+      this.props.getCheapestItems(item);
+      // this.props.loadAllGraphs(item, realmParam, factionParam);
     }
 
     hideSuggestionItemsTooltip();
@@ -100,19 +102,33 @@ class ItemTemplate extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     const {currentRealm, currentFaction, pageContext: {item}} = this.props;
     if (prevProps.currentRealm !== currentRealm || prevProps.currentFaction !== currentFaction) {
-      this.props.getCheapestItems(this.props.pageContext.item.name);
-      this.props.loadAllGraphs(item, currentRealm, currentFaction);
+      // this.props.getCheapestItems(this.props.pageContext.item.name);
+      this.props.getCheapestItems(this.props.pageContext.item);
+      // this.props.loadAllGraphs(item, currentRealm, currentFaction);
     }
   }
 
   renderAllGraphs(itemPagePrices, graphItem, isMobile=false) {
-    const {currentRealm, currentFaction, graph: {loading}} = this.props;
+    const {currentRealm, currentFaction, graph: {cheapestItems, loading}} = this.props;
     const flexDirection = 'column';
 
     let graphCardStyle = {marginLeft: 30};
     if (isMobile) {
       graphCardStyle = {marginLeft: 0, marginTop: 30}
     }
+
+    const getItemsByTimespan = (timespan) => {
+      let plots = 0;
+      if (timespan === 0) {
+        plots = 12;
+      } else if (timespan === 1) {
+        plots = 168;
+      } else {
+        plots = cheapestItems.length;
+      }
+
+      return cheapestItems.slice(0, Math.min(plots, cheapestItems.length));
+    };
 
     const getGraphDOM = (content) => (
       <div style={graphCardStyle}>
@@ -127,7 +143,7 @@ class ItemTemplate extends React.Component {
       return getGraphDOM('Please select a realm and faction to view graph data');
     }
 
-    if (loading || !itemPagePrices) {
+    if (loading || !cheapestItems) {
       return getGraphDOM(SPINNER_DOM);
     }
 
@@ -135,7 +151,7 @@ class ItemTemplate extends React.Component {
           [0,1,2].map((timespan, i) =>
             <div key={`graph-${timespan}-${i}`} style={{flex: 1}}>
               <h6 style={{color: getColorCode('Misc'), marginBottom: 10}}>{TIMESPAN_DISPLAY[timespan]}</h6>
-              <AuctionGraph prices={itemPagePrices[timespan]} item={graphItem} timespan={timespan}/>
+              <AuctionGraph prices={getItemsByTimespan(timespan)} item={graphItem} timespan={timespan}/>
             </div>
           )
     );
@@ -176,21 +192,21 @@ class ItemTemplate extends React.Component {
 
     return (
       <div style={style}>
-        <h4 style={{color: 'turquoise', marginBottom: 15}}>Cheapest Buyouts</h4>
+        <h4 style={{color: 'turquoise', marginBottom: 15}}>Cheapest Buyouts (hourly)</h4>
         {noPriceData ? noPriceData :
-          cheapestItems.map(
+          cheapestItems.slice(0, 5).map(
             (cheapestItem, i) => {
               return <div key={`${cheapestItem.id}-${i}`} style={{display: 'flex', alignItems: 'center'}}>
                 <span style={{backgroundImage: 'url("'+fImgHref(cheapestItem.metaItem)+'")'}}  className={'icon-wrapper'}>
-                  {getQuantityDOM(cheapestItem.quantity)}
+                  {/*{getQuantityDOM(cheapestItem.quantity)}*/}
                   <img src={SOCKET} alt="suggestion icon" style={{height: 50, marginRight: 10}}/>
-                </span>
-                <span style={{marginLeft: 15}}>
-                  {cheapestItem.seller}
                 </span>
                 <span style={{marginLeft: 15}}>
                   <WoWMoney key={`item$${i}-D`} text={''}
                             money={cheapestItem.buyout}/>
+                </span>
+                <span style={{fontSize: '10px', marginLeft: 15}}>
+                  {moment(new Date(cheapestItem.timestamp)).fromNow()}
                 </span>
               </div>
             }
@@ -292,7 +308,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     getCheapestItems: (query) => {
-      dispatch(getCheapestBuyout(query));
+      // dispatch(getCheapestBuyout(query));
+      dispatch(getCheapestNHData(query));
     },
     loadAllGraphs: (item, realm, faction) => {
       dispatch(getAllMarketpriceData(item, realm, faction));

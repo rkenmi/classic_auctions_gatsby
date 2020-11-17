@@ -31,7 +31,7 @@ class DesktopNavbar extends React.Component {
           <Nav style={{flex: 1, justifyContent: 'flex-end'}}>
             <AuctionSearchBar
               onSearch={this.props.onSearch}
-              options={this.props.suggestions.map(m => ({...m, name: m.itemName}))}
+              options={this.props.suggestions.map(m => ({...m, name: m.name}))}
               onInputChange={this.props.onHandleAutoComplete}
               onChange={this.props.onPickSuggestion}
               onKeyDown={this.props.onKeyPressed}

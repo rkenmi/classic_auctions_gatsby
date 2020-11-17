@@ -5,12 +5,13 @@
 import {hideSuggestionItemsTooltip, normalizeNumber, normalizeParam, objectFlip} from '../helpers/searchHelpers';
 import {SORT_FIELDS, SORT_ORDERS} from '../helpers/constants';
 import {navigate} from 'gatsby';
-import {CLASSIC_AH_API, getItemPageLink} from '../helpers/endpoints';
+import {CLASSIC_AH_API, getItemPageLink, getNHLink} from '../helpers/endpoints';
 const axios = require('axios').default;
 
 export const SEARCH_STATE = 'SEARCH_STATE';
 export const SET_SEARCH_BAR_REF = 'SET_SEARCH_BAR_REF';
 export const SET_PAGE_CONTEXT = 'SET_PAGE_CONTEXT';
+export const SET_PAGE_CONTEXT_ALL_ITEMS = 'SET_PAGE_CONTEXT_ALL_ITEMS';
 export const SET_CURRENT_REALM = 'SET_CURRENT_REALM';
 export const SET_CURRENT_FACTION = 'SET_CURRENT_FACTION';
 export const SET_ERROR = 'SET_ERROR';
@@ -53,6 +54,10 @@ export function setSearchState(searchState) {
 
 export function setPageContext(item) {
   return { type: SET_PAGE_CONTEXT, item }
+}
+
+export function setPageContextAllItems(items) {
+  return { type: SET_PAGE_CONTEXT_ALL_ITEMS, items }
 }
 
 export function setCurrentRealm(currentRealm) {
@@ -206,6 +211,9 @@ export function searchOnSetRealmAndFaction(currentRealm, currentFaction, overrid
         return;
       }
 
+      // TODO : remove
+      return;
+
       const isValid = searchIsValid(null, query, r, f);
       if (isValid) {
         dispatch(search(0, q, pushHistory));
@@ -243,8 +251,37 @@ export function searchFromHomePage(overrideQuery=null) {
     }
 
     const formattedRealm = currentRealm.replace(" ", "");
-    await navigate('/search/?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction);
+    // await navigate('/search/?q=' + query + '&p=0&realm=' + formattedRealm + '&faction=' + currentFaction);
+    await navigate(getItemPageLink(overrideQuery, currentRealm, currentFaction));
   };
+}
+
+export function getCheapestNHData(item) {
+  return async function(dispatch, getState) {
+    dispatch(loadPageSpinner());
+    const {pageReducer} = getState();
+    const {currentRealm, currentFaction} = pageReducer;
+
+    // const formattedRealm = currentRealm.replace(" ", "");
+
+    let r = normalizeParam(currentRealm),
+      f = normalizeParam(currentFaction);
+
+    // const search = await requestSearch(0, q, r, f, `&sortField=${SORT_FIELDS.BUYOUT}&sortFieldOrder=${SORT_ORDERS.ASCENDING}`, true);
+    const search = await requestNH(r, f, item.id);
+    const filteredItems = search.data.data;
+    if (!filteredItems) {
+      return;
+    }
+    const cheapestItems = filteredItems.map((i) => {return {
+      buyout: i.minBuyout,
+      timestamp: i.scannedAt,
+      metaItem: item,
+      id: item.id
+    }}).reverse();
+    dispatch(updateCheapestBuyoutsOnItemPage(cheapestItems))
+  }
+
 }
 
 export function getCheapestBuyout(query) {
@@ -298,11 +335,12 @@ export function search(pageNum=0, overrideQuery=null, pushHistory=true)  {
 
     if (pushHistory) {
       // dispatch(push('/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp))
-      await navigate('/search/?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
+      // await navigate('/search/?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
+      await navigate(getItemPageLink(overrideQuery, r, f));
     }
     dispatch(loadSpinner());
     dispatch(setMobileNavExpanded(false));
-    const search = await requestSearch(p, q, r, f, sp);
+    // const search = await requestSearch(p, q, r, f, sp);
     dispatch(updateSearchResults(q, r, f, search.data))
   };
 }
@@ -378,6 +416,10 @@ export function convertSortParamsToURLParams(sortParams) {
   return sortFieldParams.join('') + sortFieldOrderParams.join('');
 }
 
+const requestNH = (r, f, itemId) => {
+  return axios.get(getNHLink(r, f, itemId));
+};
+
 const requestSearch = (p=0, q, r, f, sp='', exact=false) => {
   return axios.get(CLASSIC_AH_API + '/api/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp + '&exact=' + exact);
 };
@@ -403,7 +445,15 @@ export function autocomplete(event) {
 
     const formattedRealm = currentRealm.replace(" ", "");
 
-    const autocomplete =  await requestAutoComplete(query, formattedRealm, currentFaction);
+    // const autocomplete =  await requestAutoComplete(query, formattedRealm, currentFaction);
+    const filteredItems = pageReducer.itemDB.filter((item) => {
+      if (item.name.toLowerCase().includes(query.toLowerCase())) {
+        return true;
+      }
+    })
+
+    const slicedItems = filteredItems.slice(0, Math.min(filteredItems.length, 5));
+    const autocomplete = {data: slicedItems};
     dispatch(updateSearchSuggestions(autocomplete.data));
   };
 }
@@ -422,15 +472,18 @@ export function pickSuggestion(e, fromHomePage=false) {
     dispatch(updateSearchQuery(e[0].name));
 
     if (fromHomePage) {
-      dispatch(searchFromHomePage(e[0].name));
+      dispatch(searchFromHomePage(e[0].id));
     } else {
-      dispatch(search(0, e[0].name));
+      dispatch(search(0, e[0].id.toString()));
     }
   };
 }
 
 export function keysPressed(e, isDesktop=true, fromHomePage=false) {
   return function(dispatch, getState) {
+    // Disable for now
+    return;
+
     if (e.key === 'ArrowRight' || e.key === 'Enter') {
       dispatch(enterBtnPressedEvent());
 

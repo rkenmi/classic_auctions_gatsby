@@ -1,5 +1,12 @@
-exports.createPages = async ({ actions: { createPage } }) => {
+exports.createPages = async ({ actions }) => {
   const itemDB = require('./src/json/item-db.json');
+
+  const createPage = actions.createPage;
+  createPage({
+    path: `/`,
+    component: require.resolve("./src/pages/index.js"),
+    context: { items: itemDB },
+  });
 
   createPage({
     path: `/items`,
@@ -15,3 +22,15 @@ exports.createPages = async ({ actions: { createPage } }) => {
     });
   })
 };
+
+exports.onCreatePage = ({ page, actions }) => {
+  const itemDB = require('./src/json/item-db.json');
+  const { createPage, deletePage } = actions
+  if (page.path === '/') {
+    deletePage(page);
+    createPage({
+      ...page,
+      context: { items: itemDB },
+    })
+  }
+}

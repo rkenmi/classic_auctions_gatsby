@@ -33,7 +33,7 @@ class AuctionSearchBar extends React.Component {
             <TypeaheadMenuItem as={'span'} bsPrefix='suggestion-dropdown-item'
                                position={index}
                                style={{cursor: 'pointer'}}
-                               option={result} active={result.itemName === this.props.query}>
+                               option={result} active={result.name === this.props.query}>
               <Link to={'#'}
                     className={'search-anchor'}
                     onClick={(e) => {
@@ -49,7 +49,7 @@ class AuctionSearchBar extends React.Component {
                     data-wowhead={'item=' + result.id + '&domain=classic'}
               >
                 <img src={iconUrl} alt="suggestion icon" style={{height: 24, marginRight: 10}}/>
-                <span style={{color: getColorCode(result.quality)}}>{result.itemName}</span>
+                <span style={{color: getColorCode(result.quality)}}>{result.name}</span>
                 <span style={{color: getColorCode('Misc'), marginLeft: 10, fontSize: 10}}>
                   {result.classType}
                 </span>

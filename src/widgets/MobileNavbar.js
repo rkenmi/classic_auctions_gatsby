@@ -60,7 +60,7 @@ class MobileNavbar extends React.Component {
           <Navbar.Collapse style={{justifyContent: 'center', marginTop: 5}} id="basic-navbar-nav">
             <AuctionSearchBar
               onSearch={this.props.onSearch}
-              options={this.props.suggestions.map(m => ({...m, name: m.itemName}))}
+              options={this.props.suggestions.map(m => ({...m, name: m.name}))}
               onInputChange={this.props.onHandleAutoComplete}
               onChange={this.props.onPickSuggestion}
               onKeyDown={(e) => this.props.onKeyPressed(e, false)}

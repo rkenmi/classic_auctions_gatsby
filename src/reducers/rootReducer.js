@@ -18,7 +18,12 @@ import {
   HIDE_GRAPH_MODAL,
   SET_TIMESPAN,
   UPDATE_ITEM_PAGE_GRAPH_DATA,
-  LOAD_GRAPH_SPINNER, SET_PAGE_CONTEXT, SEARCH_STATE, UPDATE_CHEAPEST_BO_ITEM_PAGE, LOAD_PAGE
+  LOAD_GRAPH_SPINNER,
+  SET_PAGE_CONTEXT,
+  SEARCH_STATE,
+  UPDATE_CHEAPEST_BO_ITEM_PAGE,
+  LOAD_PAGE,
+  SET_PAGE_CONTEXT_ALL_ITEMS
 } from '../actions/actions'
 import {REALMS} from '../helpers/constants';
 // import { connectRouter } from 'connected-react-router'
@@ -38,7 +43,7 @@ function visibilityReducer(state = SHOW_ALL, action) {
   }
 }
 
-function pageReducer(state = {count: 0, realms: REALMS.US_WEST, suggestions: [], items: [], hasSearched: false, query: '', loading: false,
+function pageReducer(state = {count: 0, realms: REALMS.US_WEST, suggestions: [], items: [], hasSearched: false, query: '', itemDB: [], loading: false,
   sort: {}, pageLoading: false, mobileNavExpanded: false, graph: {item: null, prices: [], cheapestItems: [], timespan: 0}}, action)
 {
   switch (action.type) {
@@ -52,7 +57,14 @@ function pageReducer(state = {count: 0, realms: REALMS.US_WEST, suggestions: [],
         ...state,
         itemPageContext: action.item
       };
+    case SET_PAGE_CONTEXT_ALL_ITEMS:
+      return {
+        ...state,
+        itemDB: action.items
+      };
     case UPDATE_SEARCH_RESULTS:
+      return {...state};
+      // TODO: fix this action
       const {items, page, queryMs, count} = action.results;
       return {
         ...state,
@@ -96,7 +108,8 @@ function pageReducer(state = {count: 0, realms: REALMS.US_WEST, suggestions: [],
         pageLoading: false,
         graph: {
           ...state.graph,
-          cheapestItems: action.results
+          cheapestItems: action.results,
+          loading: false
         },
       };
     case UPDATE_GRAPH_DATA:

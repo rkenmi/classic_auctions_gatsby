@@ -9,7 +9,12 @@ import {
   loadFromURL,
   searchOnSetRealmAndFaction,
   searchOnSetSort,
-  convertSortParamsToURLParams, getMarketpriceData, hideGraphModal, setTimespanOnGraph, setSearchState
+  convertSortParamsToURLParams,
+  getMarketpriceData,
+  hideGraphModal,
+  setTimespanOnGraph,
+  setSearchState,
+  setPageContextAllItems
 } from '../actions/actions';
 import {getParamsFromURL, normalizeParam} from '../helpers/searchHelpers';
 import {SPINNER_DOM} from '../helpers/domHelpers';
@@ -31,6 +36,7 @@ class HomePage extends React.Component{
     this.state = {
       loadPage: false
     };
+
     // Use URL parameters to perform search
     const args = getParamsFromURL(this.props.location.search);
     if (args[0] && args[1] && args[2] && args[3]) {
@@ -39,6 +45,7 @@ class HomePage extends React.Component{
   }
 
   componentDidMount() {
+    this.props.setPageContextAllItems(this.props.pageContext.items);
     let self = this;
     parser.parseURL(CORS_PROXY + 'https://classic.wowhead.com/news/rss/classic', function(err, feed) {
       if (err) throw err;
@@ -127,11 +134,13 @@ class HomePage extends React.Component{
                 Classic AH is a search engine for fetching recent live auction house data on WoW Classic. It is currently supported for desktop and mobile browsers.
                 <br/>
                 Note: Classic AH is in <b>Beta</b> and will only support US West realms for the time being.
+                <br/>
               </div>
               <div>
                 Try some sample queries:
                 <br/><br/>
                 <a href="https://classic-ah.com/search/?q=wool&p=0&realm=OldBlanchy&faction=Horde">Wool (Old Blanchy - H)</a>
+                <br/>
                 <a href="https://classic-ah.com/search/?q=righteous&p=0&realm=Anathema&faction=Alliance">Righteous Orb (Anathema - A)</a>
               </div>
             </TextBlock>
@@ -201,6 +210,9 @@ function mapDispatchToProps(dispatch) {
     },
     setError: (title, message) => {
       dispatch(setError(title, message));
+    },
+    setPageContextAllItems: (items) => {
+      dispatch(setPageContextAllItems(items));
     },
     loadFromURLParams: (query, page, currentRealm, currentFaction, sortField, sortFieldOrder) => {
       dispatch(loadFromURL(query, page, currentRealm, currentFaction, sortField, sortFieldOrder));
