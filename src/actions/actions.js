@@ -317,13 +317,14 @@ export function search(pageNum=0, overrideQuery=null, pushHistory=true)  {
   // This gives the thunk function the ability to run some logic, and still interact with the store.
   return async function(dispatch, getState) {
     const {pageReducer} = getState();
-    const {currentRealm, currentFaction, sort} = pageReducer;
+    const {currentRealm, currentFaction, sort, suggestions, itemDB} = pageReducer;
     const query = overrideQuery === null ? pageReducer.query : overrideQuery;
 
     hideSuggestionItemsTooltip();
     if (!searchIsValid(dispatch, query, currentRealm, currentFaction)) {
       return;
     }
+
     const formattedRealm = currentRealm.replace(" ", "");
 
     let p = normalizeNumber(pageNum),
@@ -333,9 +334,27 @@ export function search(pageNum=0, overrideQuery=null, pushHistory=true)  {
       sp = convertSortParamsToURLParams(sort)
     ;
 
+    let itemId = query;
+    if (isNaN(itemId)) {
+      if (suggestions.length > 0) {
+        await navigate(getItemPageLink(suggestions[0].id, r, f));
+        return;
+      }
+
+      const matchNames = itemDB
+        .filter(item => item.name.toLowerCase() === query.toLowerCase());
+
+      if (matchNames.length > 0) {
+        itemId = matchNames[0].id
+      } else {
+        return;
+      }
+    }
+    // TODO: fix this function
+    await navigate(getItemPageLink(itemId, r, f));
+    return;
+
     if (pushHistory) {
-      // dispatch(push('/search?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp))
-      // await navigate('/search/?q=' + q + '&p=' + p + '&realm=' + r + '&faction=' + f + sp);
       await navigate(getItemPageLink(overrideQuery, r, f));
     }
     dispatch(loadSpinner());

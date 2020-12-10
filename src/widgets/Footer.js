@@ -6,21 +6,21 @@ import Container from 'react-bootstrap/Container';
 const React = require('react');
 
 const PageLinks = (props) => {
-  const footerWidth = 300;
 
   return (
     <div id={'ah-footer'} style={{
       marginBottom: 5,
       display: 'flex',
-      width: footerWidth,
       justifyContent: 'space-evenly',
       color: '#fff',
       fontSize: 11
     }}>
       <Link to={'/'}>Home</Link>
       <Link to={'/about'}>About</Link>
+      <Link to={'/disclaimer'}>Disclaimer</Link>
       <Link to={'/privacy'}>Privacy Policy</Link>
-      <Link to={'/items'}>Items List</Link>
+      <Link to={'/terms'}>Terms & Conditions</Link>
+      <Link to={'/contact'}>Contact</Link>
     </div>
   )
 };

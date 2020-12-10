@@ -50,7 +50,14 @@ class HomePage extends React.Component{
     parser.parseURL(CORS_PROXY + 'https://classic.wowhead.com/news/rss/classic', function(err, feed) {
       if (err) throw err;
       self.setState({
-        feed
+        feed:
+          <TextBlock title={'News'}>
+            {feed.items.slice(0, 5).map(item =>
+              <TextBlock titleColor={'lightblue'} title={item.title} sm>
+                <span dangerouslySetInnerHTML={{__html: item.content}}/>
+              </TextBlock>
+            )}
+          </TextBlock>
       });
     });
     this.setState({
@@ -97,14 +104,7 @@ class HomePage extends React.Component{
 
     let feedBlock = null;
     if (this.state.feed) {
-      feedBlock =
-        <TextBlock title={'News'}>
-          {this.state.feed.items.map(item =>
-              <TextBlock titleColor={'lightblue'} title={item.title} sm>
-                <div dangerouslySetInnerHTML={{__html: item.content}}/>
-              </TextBlock>
-          )}
-        </TextBlock>
+      feedBlock = this.state.feed;
     }
 
     let subtitle = 'Home', description = null;
@@ -126,6 +126,8 @@ class HomePage extends React.Component{
             <TextBlock title={'Announcement'}>
               <div>
                 I will be temporarily shutting off the periodic refresh of auction house data until a good cost-effective solution is found.
+
+                Update 1: The main search page is now disabled, but you can still search from the top search bar for latest prices on items
               </div>
             </TextBlock>
             <hr/>
@@ -139,9 +141,9 @@ class HomePage extends React.Component{
               <div>
                 Try some sample queries:
                 <br/><br/>
-                <a href="https://classic-ah.com/search/?q=wool&p=0&realm=OldBlanchy&faction=Horde">Wool (Old Blanchy - H)</a>
+                <a href="https://classic-ah.com/search/?q=wool&p=0&realm=OldBlanchy&faction=Horde">Wool (Old Blanchy - H)</a> (No longer working)
                 <br/>
-                <a href="https://classic-ah.com/search/?q=righteous&p=0&realm=Anathema&faction=Alliance">Righteous Orb (Anathema - A)</a>
+                <a href="https://classic-ah.com/search/?q=righteous&p=0&realm=Anathema&faction=Alliance">Righteous Orb (Anathema - A)</a> (No longer working)
               </div>
             </TextBlock>
             <hr/>

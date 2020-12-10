@@ -10,7 +10,7 @@ class About extends React.Component {
         <Container style={{color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
           <TextBlock title={'Goal'}>
             <div>
-              Classic AH is a search engine for auction house data on WoW Classic. The goal of Classic AH is to provide
+              Classic AH is a search engine for auction house data on WoW Classic powered by TSM Classic. The goal of Classic AH is to provide
               near real-time auction house data from the convenience of your desktop, tablet, or mobile phone.
 
               We are currently only launched for US-West realms. If there is enough interest in this application, then we'll
@@ -30,11 +30,6 @@ class About extends React.Component {
                 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
                 <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
               </form>
-            </div>
-          </TextBlock>
-          <TextBlock title={'Issues and Feature Requests'}>
-            <div>
-              See a bug on the page? Or maybe you want a new feature to be added? Please email your concerns, inquiries and requests to webm.classic.ah@gmail.com.
             </div>
           </TextBlock>
         </Container>

@@ -71,22 +71,6 @@ class MobileNavbar extends React.Component {
                              currentFaction={currentFaction}
                              onSelectRealmAndFaction={this.props.setCurrentRealmAndFactionAndSearch}
                              realms={realms}/>
-              <DropdownButton
-                style={{display: 'flex', marginLeft: 15}}
-                id={'MobileSortDD'}
-                variant={'info'}
-                title={this.getMobileSortedDropdownTitle()}
-              >
-                <Dropdown.Header>Order by</Dropdown.Header>
-                <Dropdown.Divider />
-                <Dropdown.Item onClick={() => this.props.searchOnSort(SORT_FIELDS.QUANTITY, SORT_ORDERS.ASCENDING)}>Quantity: Low to High</Dropdown.Item>
-                <Dropdown.Item onClick={() => this.props.searchOnSort(SORT_FIELDS.QUANTITY, SORT_ORDERS.DESCENDING)}>Quantity: High to Low</Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item onClick={() => this.props.searchOnSort(SORT_FIELDS.BUYOUT, SORT_ORDERS.ASCENDING)}>Buyout: Low to High</Dropdown.Item>
-                <Dropdown.Item onClick={() => this.props.searchOnSort(SORT_FIELDS.BID, SORT_ORDERS.ASCENDING)} eventKey="2">Bid: Low to High</Dropdown.Item>
-                <Dropdown.Item onClick={() => this.props.searchOnSort(SORT_FIELDS.BUYOUT, SORT_ORDERS.DESCENDING)}>Buyout: High to Low</Dropdown.Item>
-                <Dropdown.Item onClick={() => this.props.searchOnSort(SORT_FIELDS.BID, SORT_ORDERS.DESCENDING)}>Bid: High to Low</Dropdown.Item>
-              </DropdownButton>
             </div>
           </Navbar.Collapse>
         </Navbar>

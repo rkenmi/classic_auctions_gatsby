@@ -20,9 +20,6 @@ export class CustomizedAxisTick extends PureComponent {
 
     return (
       <g transform={`translate(${x},${y})`}>
-        <text x={0} y={0} dy={16} textAnchor="end" fill="#666" transform="rotate(-25)">
-          {format(payload.value)}
-        </text>
       </g>
     );
   }
