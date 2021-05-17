@@ -13,7 +13,7 @@ class About extends React.Component {
             <div>
               Classic AH is a mobile app for Android and iOS that allows you to set up price alerts on auction house items.
 
-              Auction house data is provided by <Link to={'https://nexushub.co'}>NexusHub</Link> and <Link to={'https://tradeskillmaster.com'}>TSM</Link>. The goal of Classic AH is to provide
+              Auction house data is provided by <a href={'https://nexushub.co'}>NexusHub</a> and <a href={'https://tradeskillmaster.com'}>TSM</a>. The goal of Classic AH is to provide
               auction house pricing data from the convenience of your desktop, tablet, or mobile phone.
             </div>
           </TextBlock>

@@ -24,7 +24,11 @@ import Modal from 'react-bootstrap/Modal';
 import Carousel from 'react-bootstrap/Carousel';
 import AH_banner1 from '../images/AH-mx.webp';
 import AH_banner2 from '../images/AH3-mx.webp';
+import AH_banner3 from '../images/AH4-mx.webp';
+import AppleStoreLogo from '../images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg'
+import PlayStoreLogo from '../images/google-play-badge.png'
 import {TextBlock} from '../components/TextBlock';
+import Image from 'react-bootstrap/Image';
 const React = require('react');
 let Parser = require('rss-parser');
 let parser = new Parser();
@@ -88,7 +92,13 @@ class HomePage extends React.Component{
         <Carousel.Item style={{height: '30vh', zIndex: -1, width: '100%', backgroundSize: 'cover', backgroundImage: `url('${AH_banner2}')`}}>
           <Carousel.Caption>
             <h3>Price History</h3>
-            <h6>View graphs for the average buyout price within the last 12 hours, week, or month.</h6>
+            <h6>View pricing graphs for recent auction house buyouts.</h6>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item style={{height: '30vh', zIndex: -1, width: '100%', backgroundSize: 'cover', backgroundImage: `url('${AH_banner3}')`}}>
+          <Carousel.Caption>
+            <h3>Price Alarms</h3>
+            <h6>Get push notifications on your phone when an item is above or below a threshold.</h6>
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
@@ -123,12 +133,12 @@ class HomePage extends React.Component{
             </Modal.Header>
           </Modal>
           <Container style={{marginTop: 30, color: '#fff'}}>
-            <TextBlock title={'Welcome!'}>
-              <div>
-                Classic AH is a mobile app for setting up price alerts on World of Warcraft Classic and The Burning Crusade Classic.
-              </div>
-            </TextBlock>
-            <hr/>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <a href='http://play.google.com/store/?pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                <Image width={240} alt='Get it on Google Play' src={PlayStoreLogo}/>
+              </a>
+              <Image width={180} src={AppleStoreLogo}/>
+            </div>
             {feedBlock}
           </Container>
         </div>
