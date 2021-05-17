@@ -123,27 +123,9 @@ class HomePage extends React.Component{
             </Modal.Header>
           </Modal>
           <Container style={{marginTop: 30, color: '#fff'}}>
-            <TextBlock title={'Announcement'}>
-              <div>
-                I will be temporarily shutting off the periodic refresh of auction house data until a good cost-effective solution is found.
-
-                Update 1: The main search page is now disabled, but you can still search from the top search bar for latest prices on items
-              </div>
-            </TextBlock>
-            <hr/>
             <TextBlock title={'Welcome!'}>
               <div>
-                Classic AH is a search engine for fetching recent live auction house data on WoW Classic. It is currently supported for desktop and mobile browsers.
-                <br/>
-                Note: Classic AH is in <b>Beta</b> and will only support US West realms for the time being.
-                <br/>
-              </div>
-              <div>
-                Try some sample queries:
-                <br/><br/>
-                <a href="https://classic-ah.com/search/?q=wool&p=0&realm=OldBlanchy&faction=Horde">Wool (Old Blanchy - H)</a> (No longer working)
-                <br/>
-                <a href="https://classic-ah.com/search/?q=righteous&p=0&realm=Anathema&faction=Alliance">Righteous Orb (Anathema - A)</a> (No longer working)
+                Classic AH is a mobile app for setting up price alerts on World of Warcraft Classic and The Burning Crusade Classic.
               </div>
             </TextBlock>
             <hr/>

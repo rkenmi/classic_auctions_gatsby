@@ -1,6 +1,7 @@
 import {Container} from 'react-bootstrap';
 import Layout from '../components/Layout';
 import {TextBlock} from '../components/TextBlock';
+import {Link} from '@reach/router';
 const React = require('react');
 
 class About extends React.Component {
@@ -10,16 +11,15 @@ class About extends React.Component {
         <Container style={{color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
           <TextBlock title={'Goal'}>
             <div>
-              Classic AH is a search engine for auction house data on WoW Classic powered by TSM Classic. The goal of Classic AH is to provide
-              near real-time auction house data from the convenience of your desktop, tablet, or mobile phone.
+              Classic AH is a mobile app for Android and iOS that allows you to set up price alerts on auction house items.
 
-              We are currently only launched for US-West realms. If there is enough interest in this application, then we'll
-              consider expanding to US-East, Europe and Oceanic!
+              Auction house data is provided by <Link to={'https://nexushub.co'}>NexusHub</Link> and <Link to={'https://tradeskillmaster.com'}>TSM</Link>. The goal of Classic AH is to provide
+              auction house pricing data from the convenience of your desktop, tablet, or mobile phone.
             </div>
           </TextBlock>
           <TextBlock title={'Donations'}>
             <div>
-              If you would like to help cover the hosting costs, it would be much appreciated!
+              If you would like to help cover hosting and development costs, feel free to donate
             </div>
             <div style={{display: 'flex', justifyContent: 'center', marginTop: 30}}>
               <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
