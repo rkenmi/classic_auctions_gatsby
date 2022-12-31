@@ -134,10 +134,12 @@ class HomePage extends React.Component{
           </Modal>
           <Container style={{marginTop: 30, color: '#fff'}}>
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-              <a href='http://play.google.com/store/?pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+              <a href='https://play.google.com/store/apps/details?id=com.classic_ah&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
                 <Image width={240} alt='Get it on Google Play' src={PlayStoreLogo}/>
               </a>
-              <Image width={180} src={AppleStoreLogo}/>
+              <a href={'https://apps.apple.com/us/app/classic-ah/id1567718370'}>
+                <Image width={180} src={AppleStoreLogo}/>
+              </a>
             </div>
             {feedBlock}
           </Container>

@@ -33,7 +33,7 @@ export function getParamsFromURL(search) {
 
 export function hideSuggestionItemsTooltip() {
   // Remove tooltip if the tooltip is currently hovering
-  if (window && window.WH && window.WH.Tooltip) {
+  if (window && window.WH && window.WH.Tooltip && typeof window.WH.Tooltip.hide === 'function') {
     window.WH.Tooltip.hide();
   }
 }
