@@ -222,6 +222,17 @@ class ItemTemplate extends React.Component {
     return <div>{txt}</div>;
   }
 
+  _renderDeprecatedWarning() {
+    return (
+      <Container style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '60px'}}>
+        <div>
+          <h2>{'These pages are no longer maintained'}</h2>
+          <h3>{'Visit '} <a href={'/'}>here</a> to use the mobile app instead.</h3>
+        </div>
+      </Container>
+    );
+  }
+
   _renderDesktopView() {
     const {graph, pageContext: { item } } = this.props;
     const {itemPagePrices} = graph;
@@ -229,17 +240,18 @@ class ItemTemplate extends React.Component {
 
     return (
       <div style={{color: '#fff', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
-          <Container style={{display: 'flex', flex: 1, alignItems: 'space-evenly'}}>
-            <div style={{flex: 0.3}}>
-              <h4 style={{color: 'turquoise', marginBottom: 15}}>Stats</h4>
-              {<ItemTooltip item={item} tooltip={item.tooltip}/>}
-              <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
-              {this._renderCheapestItems(noPriceData, cheapestItems)}
-            </div>
-            <div style={{flex: 0.7}}>
-              {this.renderAllGraphs(itemPagePrices, item)}
-            </div>
-          </Container>
+        {this._renderDeprecatedWarning()}
+        <Container style={{display: 'flex', flex: 1, alignItems: 'space-evenly'}}>
+          <div style={{flex: 0.3}}>
+            <h4 style={{color: 'turquoise', marginBottom: 15}}>Stats</h4>
+            {<ItemTooltip item={item} tooltip={item.tooltip}/>}
+            <a href={`https://classic.wowhead.com/item=${item.id}`} alt="wowhead">View on Wowhead</a>
+            {this._renderCheapestItems(noPriceData, cheapestItems)}
+          </div>
+          <div style={{flex: 0.7}}>
+            {this.renderAllGraphs(itemPagePrices, item)}
+          </div>
+        </Container>
       </div>
     )
   }
@@ -251,6 +263,7 @@ class ItemTemplate extends React.Component {
 
     return (
       <div>
+        {this._renderDeprecatedWarning()}
         <Container style={{color: '#fff', paddingTop: 0, display: 'flex', flexDirection: 'column', alignItems: 'space-evenly'}}>
           <div style={{display: 'flex'}}>
             <div style={{flex: 1}}>
